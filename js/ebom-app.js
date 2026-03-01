@@ -21,6 +21,19 @@ let currentSelectedNode = null;
 var isEditMode = false;
 var isFullEditMode = false;
 
+/* ── Global helper: find a node by name in hierarchy data ── */
+function findItemByName(data, name) {
+    if (!Array.isArray(data)) return null;
+    for (const it of data) {
+        if (it && (it.originalname === name || it.name === name)) return it;
+        if (it && Array.isArray(it.children)) {
+            const f = findItemByName(it.children, name);
+            if (f) return f;
+        }
+    }
+    return null;
+}
+
 
 
 /* --- <script> (body outside template) --- */
@@ -644,17 +657,6 @@ function updateImage() {
 	function navigateImage(direction) {
 	    currentImageIndex += direction;
 	    updateImage();
-
-	function navigateImage(direction) {
-    	    if (direction === "next" && currentImageIndex < imageUrls.length - 1) {
-        	currentImageIndex++;
-    	    } else if (direction === "prev" && currentImageIndex < 0) {
-        	currentImageIndex--;
-    	}
-
-    	updateImage(); // Ensure the image and button states are updated
-}
-
 	}
         
 	// Function to load JSON file (Base Cadastro)
@@ -855,8 +857,6 @@ function updateImage() {
 	    };
 	}
   
-/* toggleEditMode() - defined once below */
-
 /* --- <script> (body outside template) --- */
 document.querySelector('.info-button').addEventListener('click', function() {
         document.querySelector('.info-popup').style.display = 'block';
@@ -871,48 +871,6 @@ document.querySelector('.info-button').addEventListener('click', function() {
         document.querySelector('.info-popup-overlay').style.display = 'none';
     });
   
-/* toggleEditMode() - defined once below */
-
-/* --- <script> (body outside template) --- */
-console.log("Entrando no modo edição");
-
-        document.getElementById("textEditBtn").style.display = "inline-block";
-        document.getElementById("saveJsonBtn").style.display = "inline-block";
-        document.getElementById("addNodeBtn").style.display = "inline-block";
-        document.getElementById("removeNodeBtn").style.display = "inline-block";
-        document.getElementById("imageEditBtn").style.display = "inline-block";
-        document.getElementById("editDocButton").style.display = "inline-block";
-
-        isFullEditMode = true;
-        document.getElementById("addNodeBtn").style.display = "none";
-        document.getElementById("removeNodeBtn").style.display = "none";
-        document.getElementById("imageEditBtn").style.display = "none";
-        document.getElementById("saveJsonBtn").style.display = "inline";
-        document.getElementById("addNodeBtn").style.display = "inline";
-        document.getElementById("removeNodeBtn").style.display = "inline";
-        document.getElementById("textEditBtn").style.display = "inline";
-        document.getElementById("imageEditBtn").style.display = "inline";
-        document.getElementById("editDocButton").style.display = "inline";
-
-        document.getElementById("saveJsonBtn").style.display = "none";
-        document.getElementById("addNodeBtn").style.display = "none";
-        document.getElementById("removeNodeBtn").style.display = "none";
-        document.getElementById("textEditBtn").style.display = "none";
-        document.getElementById("imageEditBtn").style.display = "none";
-        document.getElementById("editDocButton").style.display = "none";
-
-        const editBtn = document.getElementById("editModeBtn");
-        editBtn.classList.remove("toggle-active");
-        document.getElementById("textEditBtn").classList.remove("toggle-active");
-
-        if (isEditMode) {
-            isEditMode = false;
-            toggleTreeEdit(document.getElementById("treeContent"), false);
-            toggleTableEdit(false);
-}
-
-/* toggleEditMode() - defined once below */
-
 /* --- <script> (body outside template) --- */
 function handleEditDocClick() {
     const selectedTreeItem = document.querySelector('.tree-item.selected');
@@ -957,8 +915,6 @@ function saveDocLinks() {
 function closeDocManagerModal() {
     document.getElementById("docManagerModal").style.display = "none";
 }
-
-/* toggleEditMode() - defined once below */
 
 /* --- <script> (body outside template) --- */
 function updateImage() {
@@ -1061,61 +1017,6 @@ function updateImage() {
 }
 
 
-/* toggleEditMode() - defined once below */
-
-/* --- <script> (body outside template) --- */
-function toggleTableEdit(enable) {
-    const tableContainer = document.getElementById("tableContainer");
-    const rows = tableContainer.querySelectorAll("table tbody tr");
-
-    rows.forEach(row => {
-        const cells = row.querySelectorAll("td");
-        cells.forEach(cell => {
-            if (enable) {
-                const input = document.createElement("input");
-                input.value = cell.textContent;
-                input.className = "tree-edit-input";
-                cell.textContent = "";
-                cell.appendChild(input);
-            } else {
-                const input = cell.querySelector("input");
-                if (input) {
-                    cell.textContent = input.value;
-                }
-            }
-        });
-    });
-}
-
-/* toggleEditMode() - defined once below */
-
-/* --- <script> (body outside template) --- */
-function toggleTableEdit(enable) {
-    const tableContainer = document.getElementById("tableContainer");
-    const rows = tableContainer.querySelectorAll("table tbody tr");
-
-    rows.forEach((row, rowIndex) => {
-        const cells = row.querySelectorAll("td");
-        cells.forEach((cell, colIndex) => {
-            if (colIndex === 0) return; // Nome não editável
-
-            if (enable) {
-                const input = document.createElement("input");
-                input.value = cell.textContent;
-                input.className = "tree-edit-input";
-                cell.textContent = "";
-                cell.appendChild(input);
-            } else {
-                const input = cell.querySelector("input");
-                if (input) {
-                    cell.textContent = input.value;
-                }
-            }
-        });
-    });
-}
-
-
 function bindTreeEditSync() {
     const selectedItem = document.querySelector(".tree-item.selected input");
     if (!selectedItem) return;
@@ -1131,8 +1032,6 @@ function bindTreeEditSync() {
     });
 }
 
-
-/* toggleEditMode() - defined once below */
 
 /* --- <script> (body outside template) --- */
 function toggleTreeEdit(container, enable) {
@@ -1181,66 +1080,6 @@ function toggleTableEdit(enable) {
         });
     });
 }
-
-/* toggleEditMode() - defined once below */
-
-/* --- <script> (body outside template) --- */
-if (!span.dataset.originalname) {
-            span.dataset.originalname = span.textContent.trim();
-        }
-
-        updateNode(hierarchyData);
-
-    // Optional: alert or console log
-    console.log("Hierarchy data updated from UI edits.");
-
-    // Download the updated hierarchyData as JSON
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(hierarchyData, null, 2));
-    const dlAnchorElem = document.createElement("a");
-
-    function syncJsonWithDom(data) {
-        const selected = document.querySelector('.tree-item.selected');
-        if (!selected) return;
-
-        const originalname = selected.querySelector('.item-originalname')?.textContent;
-        if (!originalname) return;
-
-        function updateItem(itemList) {
-            for (let item of itemList) {
-                if (item.originalname === originalname) {
-                    const firstRow = document.querySelector('#tableContainer tbody tr');
-                    if (firstRow) {
-                        const cells = firstRow.querySelectorAll('td');
-                        if (cells.length >= 6) {
-                            item.originalname = originalname;
-                            item.name = originalname.toUpperCase();
-                            item.idFigura = cells[1].textContent;
-                            item.fabricanteFornecedor = cells[2].textContent;
-                            item.referenciaComercial = cells[3].textContent;
-                            item.qtd = cells[4].textContent;
-                            item.codigoSap = cells[5].textContent;
-                        }
-                    }
-                    break;
-                }
-                if (item.children) updateItem(item.children);
-            }
-        }
-
-        updateItem(data);
-    }
-
-    syncJsonWithDom(hierarchyData);
-
-    const jsonString = JSON.stringify(hierarchyData, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.click();
-}
-
-/* toggleEditMode() - defined once below */
 
 /* --- <script> (body outside template) --- */
 function handleDocButtonClick() {
@@ -1871,18 +1710,6 @@ document.addEventListener('keydown', function (event) {
 /* --- <script> (body outside template) --- */
 // === Image Modal (Gerenciar Imagens) — robust handlers injected ===
 (function(){
-  function findItemByName(data, name){
-    if (!Array.isArray(data)) return null;
-    for (const it of data){
-      if (it && (it.originalname === name || it.name === name)) return it;
-      if (it && Array.isArray(it.children)){
-        const f = findItemByName(it.children, name);
-        if (f) return f;
-      }
-    }
-    return null;
-  }
-
   // Normalize Google Drive links to a thumbnail URL that loads cross-origin
   window.convertGoogleDriveUrl = window.convertGoogleDriveUrl || function(url){
     if(!url) return "";

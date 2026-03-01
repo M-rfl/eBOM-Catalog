@@ -1,0 +1,16 @@
+# Claude Code config
+.claude/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+
+# Temporary files
+*.tmp
+*.bak

@@ -1,0 +1,1051 @@
+/*!
+ * eBOM Catalog - Application Styles  v2.0
+ * (c) 2025 eBOM Catalog. All rights reserved.
+ *
+ * Load order:
+ *   1. Legacy layout (original CSS, overridden by theme-v2 at end)
+ *   2. Component styles (info-button, modals, tree search, import bars)
+ *   3. Body-level styles (edit-mode modal, fullscreen viewer, disclaimer)
+ *   4. Professional Theme v2.0 [ebom-theme-v2] - LAST, uses !important overrides
+ */
+/* ═══ Extracted from <style> (head) ═══ */
+
+   /* General Styling */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+	    overflow: hidden; /* Prevent vertical and horizontal scrollbars */
+        }
+
+        /* Header */
+        header {
+            background-color: #FF7C3C;
+            color: white;
+            display: flex;
+            justify-content: center; /* Center the content horizontally */
+            align-items: center; /* Center the content vertically */
+            padding: 10px 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            height: 5vh;
+                    position: relative;
+        }
+
+        header .logo {
+            height: 40px;
+            position: absolute; /* Position the logo separately */
+            right: 20px; /* Align logo to the right */
+        }
+        /* Tab Navigation (Menu vertical à esquerda + ocultar) */
+        #tabNav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 240px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            gap: 10px;
+            background-color: #ffffff;
+            border-right: 2px solid #ccc;
+            border-bottom: none;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        #tabNav.collapsed {
+            width: 48px;
+            padding: 10px 6px;
+        }
+
+        
+        #tabNav.hidden {
+            display: none;
+        }
+#tabButtons {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        #tabNav.collapsed #tabButtons {
+            display: none;
+        }
+
+.navToggle {
+            background: #8C8E91;
+            color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .navToggle:hover {
+            filter: brightness(0.95);
+        }
+
+        .headerNavToggle {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 10px;
+            border-radius: 10px;
+        }
+
+
+        .tab {
+            background-color: #8C8E91;
+            outline: none;
+            padding: 14px 16px;
+            transition: 0.3s;
+            text-align: center;
+            cursor: pointer;
+            border-right: 1px solid #ccc;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .tab:last-child {
+            border-right: none;
+        }
+
+        .tab.active {
+            background-color: #FF9D6C;
+            font-weight: bold;
+        }
+
+        .tab:hover {
+            background-color: #8C8E91;
+        }
+
+        /* Tab Content */
+        .tabContent {
+            display: none;
+            padding: 3px 3px;
+            margin-left: 240px;
+            overflow: auto;
+	    height: calc(100vh - 5vh);
+        }
+
+        
+        #tabNav.hidden ~ .tabContent {
+            margin-left: 0;
+        }
+
+.tabContent.active {
+            display: block;
+        }
+
+        /* Main container layout */
+        #mainContainer {
+            display: grid;
+            grid-template-columns: 30% 70%;
+            grid-template-rows: auto 65% 35%;
+            gap: 5px;
+            height: 82vh;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Individual sections */
+        #hierarchyTree {
+            grid-column: 1;
+            grid-row: 1 / 4;
+            border: 1px solid #ccc;
+            padding: 5px;
+            overflow-y: auto;
+            overflow-x: auto;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        #imageContainer {
+            grid-column: 2;
+            grid-row: 1 / 3;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            position: relative;
+        }
+
+        #componentImage {
+            width: 95%;
+            height: 95%;
+            object-fit: contain;
+            image-rendering: high-quality;
+            max-width: 100%;
+            max-height: 100%;
+            transition: transform 0.3s ease;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+        }
+
+        
+
+        #componentModel {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            background: transparent;
+        }
+
+#bottomContainer {
+            grid-column: 2;
+            grid-row: 3;
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 5px;
+        }
+
+        .bottom-section {
+            border: 1px solid #ccc;
+            padding: 5px;
+            overflow-y: auto;
+    	    font-size: 12px;
+        }
+
+    	/* Make only the first row in tableContainer bold */
+    	#tableContainer table tbody tr:first-child {
+        font-weight: bold;
+    	}
+
+        /* Zoom controls */
+        #zoomControls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        #zoomControls button {
+            margin: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+	#prevImage {
+    	display: inline-block !important;
+    	visibility: visible !important;
+	margin: 1px;
+	}
+
+	#nextImage {
+    	display: inline-block !important;
+    	visibility: visible !important;
+	margin: 1px;
+	}
+
+	#prevImage:disabled, #nextImage:disabled {
+    	opacity: 0.5;
+    	cursor: not-allowed;
+	}
+
+	#imageInfo {
+    	    position: absolute;
+    	    bottom: 15px;
+    	    left: 3.5%;
+    	    transform: translateX(-50%);
+    	    background-color: #FF7C3C;
+    	    color: white;
+    	    padding: 5px 5px;
+    	    border-radius: 0px;
+    	    font-size: 14px;
+    	    z-index: 10;
+	}
+
+        /* Tree styling */
+        .tree-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 0;
+        }
+
+	.tree-item.selected {
+    	    background-color: #FFD580; /* Light orange background */
+    	    font-weight: bold;
+	}
+
+        .toggle-btn {
+            min-width: 20px;
+            height: 20px;
+            line-height: 18px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            cursor: pointer;
+            background: #FF7C3C;
+        }
+
+        .toggle-placeholder {
+            min-width: 20px;
+            height: 20px;
+        }
+
+        .view-btn {
+            padding: 2px 8px;
+            background-color: #004680;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* Tree structure */
+        ul {
+            list-style-type: none;
+            padding-left: 25px;
+            margin: 0;
+            position: relative;
+        }
+
+        ul:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 8px;
+            bottom: 0;
+            width: 1px;
+            background: #ccc;
+        }
+
+        li {
+            margin: 5px 0;
+            position: relative;
+        }
+
+        li:before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: -17px;
+            width: 17px;
+            height: 1px;
+            background: #ccc;
+        }
+
+        li:last-child:after {
+            content: '';
+            position: absolute;
+            top: 13px;
+            left: -17px;
+            bottom: 0;
+            width: 1px;
+            background: white;
+        }
+
+        #treeContent > ul:before,
+        #treeContent > ul > li:before {
+            display: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            #mainContainer {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+            }
+
+            #hierarchyTree {
+                grid-column: 1;
+                grid-row: 1;
+                max-height: 300px;
+            }
+
+            #imageContainer {
+                grid-column: 1;
+                grid-row: 2;
+            }
+
+            #bottomContainer {
+                grid-column: 1;
+                grid-row: 3;
+                grid-template-columns: 1fr;
+            }
+
+        }
+        /* Seção Pesquisa Material - moved outside media query */
+        input[type="file"] {
+            padding: 5px;
+        }
+        button {
+            background-color: #FF7C3C;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+	.highlight {
+    	    background-color: yellow;
+    	    font-weight: bold;
+	}
+        
+	/* Layout for fields */
+        .input-container {
+            margin-bottom: 15px;
+        }
+
+        /* Flexbox container for fields */
+        .fields-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+	/* Style for each input container */
+        .field {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+	/* Ensure the checkbox is aligned properly */
+        .checkbox-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        
+	label {
+            display: block;
+            margin-bottom: 5px; /* Space between label and field */
+        }
+        
+	/* Optional: Add some spacing between rows for better layout */
+        .input-container, .checkbox-container {
+            width: 100%;
+        }
+
+        /* Add a bit of spacing for the checkbox */
+        .checkbox-container input {
+            margin-right: 10px;
+        }
+
+	#resultTable {
+    	    width: 100%; /* Make the table width fit the parent container */
+    	    border-collapse: collapse; /* Collapse borders for a clean look */
+	}	
+
+	#resultTable th, #resultTable td {
+    	    text-align: left; /* Align text to the left for better readability */
+    	    padding: 8px; /* Add padding for spacing */
+	}
+
+	#resultTable thead {
+    	    background-color: #f1f1f1; /* Optional: Add a background color for the header */
+	}
+
+	#resultTable tbody tr:nth-child(even) {
+    	    background-color: #f9f9f9; /* Optional: Add alternating row colors for better visibility */
+	}
+
+	#resultTable td:nth-child(4), /* 4th column (Texto Longo) */
+	#resultTable th:nth-child(4) {
+    	    word-break: break-all	; /* Allow breaking long words */
+    	    white-space: normal; /* Enable text wrapping */
+	}
+
+	#chat {
+	width: 100%;
+    	height: 82vh;
+	overflow: hidden;
+	}
+  
+        /* --- GLB integration tweaks --- */
+        #componentModel { z-index: 2; }
+        #componentImage { position: relative; z-index: 2; }
+        #noImageText { z-index: 4; pointer-events: none; }
+        #prevImage, #nextImage, #imageInfo, #zoomControls, #docButton, #imageEditBtn {
+            z-index: 30 !important;
+            pointer-events: auto;
+        }
+
+
+/* fullscreen styles - see #fullscreenBtn-style-v7 */
+
+
+/* ═══ Extracted from <style> (head) ═══ */
+
+   .info-button {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #ccc;
+        color: white;
+        text-align: center;
+        line-height: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-left: 10px;
+        transition: background-color 0.3s ease;
+    }
+    .info-button:hover {
+        background-color: #888;
+    }
+    .info-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+    .info-popup .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+    .info-popup .close-button:hover {
+        color: red;
+    }
+    .info-popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+  
+/* fullscreen styles - see #fullscreenBtn-style-v7 */
+
+
+/* ═══ Extracted from <style> (head) ═══ */
+
+   .toggle-active {
+    background-color: #444 !important;
+    color: white !important;
+    font-weight: bold;
+}
+  
+/* fullscreen styles - see #fullscreenBtn-style-v7 */
+
+
+/* ═══ Extracted from <style> (head) ═══ */
+
+
+/* === eMobi material modal table layout (2025-08-27) === */
+@media (max-width: 900px){
+  .material-modal-table { border-spacing:8px !important; }
+  .material-modal-table td.left-cell { display:block; width:auto !important; }
+  .material-modal-table td.right-cell { display:block; width:auto !important; }
+  .material-modal-table tr td[rowspan] { rowspan:auto; } /* visual only; table layout will stack */
+}
+
+
+/* fullscreen styles - see #fullscreenBtn-style-v7 */
+
+
+/* ═══ Extracted from <style> (head) ═══ */
+
+
+/* === eMobi modal no-horizontal-scroll (2025-08-27) === */
+#materialImageModal #modalLongText,
+#materialImageModal #modalShortText,
+#materialImageModal #modalMaterialId {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+
+/* fullscreen styles - see #fullscreenBtn-style-v7 */
+
+
+/* ═══ Extracted from <style id="tree-search-style-antigo"> (head) ═══ */
+
+
+/* === Tree search UI (antigo16) === */
+#hierarchyTree{ display:flex; flex-direction:column; min-height:0; }
+#hierarchyTree .tree-search-bar{
+  position: sticky; top: 0; z-index: 5;
+  display:flex; align-items:center; gap:6px;
+  padding:6px; background:#fff; border-bottom:1px solid #eee;
+  flex: 0 0 auto; box-sizing: border-box;
+}
+#treeSearchInput{ flex:1 1 auto; padding:6px 8px; font-size:12px; min-width:0; }
+#treeSearchBtn, #treeSearchClear{
+  background:#FF7C3C; color:#fff; border:none; cursor:pointer; padding:6px 8px; border-radius:3px;
+}
+#treeSearchClear{ background:#8C8E91; }
+.tree-search-count{ font-size:11px; color:#555; }
+#hierarchyTree mark{ background:#fff59d; padding:0 2px; border-radius:2px; }
+#hierarchyTree #treeContent{ flex:1 1 auto; min-height:0; overflow:auto; }
+#hierarchyTree .tree-item.selected {
+  background: #fff3e9;
+  outline: 2px solid #FF7C3C;
+  border-radius: 4px;
+}
+
+/* Import bars inside tabs (layout update 2026) */
+.tab-import-bar{
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  justify-content:flex-start;
+  gap:10px;
+  padding:10px 12px;
+  margin:10px 10px 0 10px;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+}
+.tab-import-row{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+  flex-wrap:wrap;
+  width:100%;
+}
+.tab-import-title{
+  font-weight:600;
+  font-size:13px;
+  color:#111827;
+  min-width:260px;
+}
+.tab-import-row input[type="file"]{
+  flex:1 1 260px;
+}
+.btn-accent{
+  background-color:#FF7C3C;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.btn-accent:hover{ filter:brightness(0.95); }
+/* Toggle (▲/▼) for tab-import-bar */
+.toggle-import-bar{
+  flex-shrink:0;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  font-size:14px;
+  line-height:1;
+  padding:2px 6px;
+  border-radius:6px;
+  color:#374151;
+}
+.toggle-import-bar:hover{ background: rgba(17,24,39,0.06); }
+.tab-import-row{ flex:1; }
+
+.tab-import-bar.collapsed{ padding:10px 12px; }
+.tab-import-bar.collapsed .tab-import-row{ display:none; }
+
+/* Chat tab spacer to keep menu alignment consistent */
+.chat-import-spacer{
+  padding:0;
+  border:none;
+  background:transparent;
+  height:0;
+  margin:10px 10px 0 10px; /* match .tab-import-bar top offset */
+}
+
+/* fullscreen styles - see #fullscreenBtn-style-v7 */
+
+
+/* ═══ Extracted from <style id="fullscreenBtn-style-v7"> (head) ═══ */
+
+/* ===== Fullscreen Button (v7) - aligned with imageInfo + orange buttons ===== */
+#fullscreenBtn{
+  position:absolute !important;
+  bottom:15px !important;
+  left:110px !important; /* move right to avoid overlap with #imageInfo */
+  transform:none !important;
+
+  background-color:#FF7C3C !important;
+  color:#ffffff !important;
+  border:none !important;
+  border-radius:0px !important;
+  padding:5px 8px !important;
+  font-size:14px !important;
+  line-height:1 !important;
+  cursor:pointer !important;
+
+  z-index:50 !important;
+  box-shadow:none !important;
+}
+#fullscreenBtn:hover{
+  filter:brightness(0.95) !important;
+}
+
+
+/* ═══ Extracted from <style id="ebom-theme-v2"> (head) ═══ */
+
+/* ── CSS Custom Properties ───────────────────────────────────────── */
+:root {
+  --clr-primary:        #2563eb;
+  --clr-primary-hover:  #1d4ed8;
+  --clr-primary-active: #1e40af;
+  --clr-primary-light:  #dbeafe;
+  --clr-primary-lighter:#eff6ff;
+  --clr-header-bg:      #0f172a;
+  --clr-nav-bg:         #1e293b;
+  --clr-nav-btn:        #334155;
+  --clr-nav-btn-hover:  #475569;
+  --clr-text:           #111827;
+  --clr-muted:          #6b7280;
+  --clr-border:         #e5e7eb;
+  --clr-surface:        #f8fafc;
+  --clr-success:        #16a34a;
+  --clr-danger:         #dc2626;
+  --radius-sm:          4px;
+  --radius:             8px;
+  --radius-lg:          12px;
+  --shadow-sm:          0 1px 3px rgba(0,0,0,.08);
+  --shadow:             0 4px 16px rgba(0,0,0,.10);
+  --shadow-lg:          0 8px 32px rgba(0,0,0,.14);
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+/* ── Typography ──────────────────────────────────────────────────── */
+body { font-family: var(--font); color: var(--clr-text); }
+
+/* ── Header override ─────────────────────────────────────────────── */
+header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+  border-bottom: 3px solid var(--clr-primary) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,.35) !important;
+}
+
+/* ── Tab Nav override ────────────────────────────────────────────── */
+#tabNav {
+  background-color: var(--clr-nav-bg) !important;
+  border-right: 2px solid rgba(37,99,235,.3) !important;
+}
+
+.navToggle {
+  background: var(--clr-nav-btn) !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+}
+.navToggle:hover { background: var(--clr-nav-btn-hover) !important; }
+
+.tab {
+  background-color: var(--clr-nav-btn) !important;
+  color: #cbd5e1 !important;
+  border-radius: var(--radius-sm) !important;
+  border-right: none !important;
+  font-size: 12px;
+  letter-spacing: .4px;
+}
+.tab.active {
+  background-color: var(--clr-primary) !important;
+  color: #ffffff !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.tab:hover:not(.active) {
+  background-color: var(--clr-nav-btn-hover) !important;
+  color: #ffffff !important;
+}
+
+/* ── Buttons – global override ───────────────────────────────────── */
+button:not(#docButton):not(.close-btn):not(.btn):not(.navToggle) {
+  background-color: var(--clr-primary) !important;
+  border-radius: var(--radius-sm) !important;
+  transition: filter .15s ease, background-color .15s ease !important;
+}
+/* docButton color is managed by JS (blue = has doc, gray = no doc) */
+#docButton { background-color: var(--clr-primary); border-radius: var(--radius-sm); }
+button:hover:not(#docButton) { filter: brightness(.92) !important; }
+button:disabled { opacity: .5 !important; cursor: not-allowed !important; }
+
+.btn-accent {
+  background-color: var(--clr-primary) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ── Toggle buttons in tree ──────────────────────────────────────── */
+.toggle-btn {
+  background: var(--clr-primary) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ── Tree selected state ─────────────────────────────────────────── */
+.tree-item.selected {
+  background-color: var(--clr-primary-light) !important;
+  outline: 2px solid var(--clr-primary) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ── Image info badge ────────────────────────────────────────────── */
+#imageInfo {
+  background-color: var(--clr-primary) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ── Tree search bar buttons ─────────────────────────────────────── */
+#treeSearchBtn { background: var(--clr-primary) !important; }
+#treeSearchClear { background: var(--clr-nav-btn) !important; }
+
+/* ── Fullscreen button ───────────────────────────────────────────── */
+#fullscreenBtn {
+  background: rgba(15,23,42,.85) !important;
+  border-radius: var(--radius) !important;
+}
+#fullscreenBtn:hover { background: rgba(15,23,42,.95) !important; filter: none !important; }
+
+/* ── Import bar ──────────────────────────────────────────────────── */
+.tab-import-bar {
+  border: 1px solid var(--clr-border) !important;
+  border-radius: var(--radius) !important;
+  background: #fff !important;
+}
+.tab-import-title { color: var(--clr-primary) !important; font-weight: 700 !important; }
+
+/* ── Language toggle button ──────────────────────────────────────── */
+#langToggleBtn {
+  background: rgba(37,99,235,.15) !important;
+  border: 1px solid rgba(37,99,235,.4) !important;
+  color: #93c5fd !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 5px 12px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: .5px !important;
+  cursor: pointer !important;
+  position: absolute !important;
+  right: 60px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+#langToggleBtn:hover {
+  background: rgba(37,99,235,.28) !important;
+  filter: none !important;
+}
+
+/* ── Disclaimer banner ───────────────────────────────────────────── */
+.page-disclaimer {
+  background: #fefce8;
+  border-bottom: 1px solid #fde68a;
+  color: #78350f;
+  font-size: 11px;
+  text-align: center;
+  padding: 5px 16px;
+  font-style: italic;
+}
+
+/* ── Result table improvements ───────────────────────────────────── */
+#resultTable thead tr { background: var(--clr-primary) !important; }
+#resultTable thead th { color: #fff !important; font-weight: 600 !important; padding: 10px 8px !important; }
+#resultTable tbody tr:hover { background-color: var(--clr-primary-lighter) !important; }
+#resultTable { border-radius: var(--radius) !important; overflow: hidden !important; }
+
+/* ── Doc button active (has doc) ─────────────────────────────────── */
+.doc-btn-active { background-color: var(--clr-primary) !important; }
+.doc-btn-inactive { background-color: #9ca3af !important; }
+
+/* ── Red edit-mode buttons keep their color ──────────────────────── */
+button[style*="#cc0000"] { background-color: #dc2626 !important; }
+
+/* ── Toast notifications ─────────────────────────────────────────── */
+.ebom-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 14px;
+  font-family: var(--font);
+  max-width: 340px;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  animation: toastIn .25s cubic-bezier(.34,1.56,.64,1);
+  line-height: 1.4;
+}
+@keyframes toastIn {
+  from { opacity:0; transform: translateY(16px) scale(.95); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+.ebom-toast-info    { background: var(--clr-primary); }
+.ebom-toast-success { background: var(--clr-success); }
+.ebom-toast-error   { background: var(--clr-danger); }
+
+/* ── TOOLS tab – converter cards ─────────────────────────────────── */
+#tools { background: var(--clr-surface); }
+.tools-grid {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+.tool-card {
+  background: #fff;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tool-card-icon { font-size: 2em; line-height: 1; }
+.tool-card-title { font-size: 1.05em; font-weight: 700; margin: 0; color: var(--clr-primary); }
+.tool-card-desc  { color: var(--clr-muted); font-size: 13px; margin: 0; line-height: 1.5; }
+.tool-card-cols  {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 11.5px;
+  color: #0369a1;
+  line-height: 1.6;
+}
+.tool-card-cols strong { color: #075985; display: block; margin-bottom: 2px; }
+.tool-card-upload { display: flex; flex-direction: column; gap: 8px; }
+.tool-convert-btn {
+  background: var(--clr-primary) !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 10px 16px !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  width: 100% !important;
+  letter-spacing: .2px;
+}
+.tool-convert-btn:hover { background: var(--clr-primary-hover) !important; filter: none !important; }
+.tool-status { font-size: 13px; min-height: 18px; color: var(--clr-muted); }
+.tool-status.ok  { color: var(--clr-success); font-weight: 600; }
+.tool-status.err { color: var(--clr-danger); font-weight: 600; }
+
+/* ── Tools section header ────────────────────────────────────────── */
+.tools-section-header {
+  padding: 16px 20px 0;
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--clr-primary);
+  border-bottom: 2px solid var(--clr-primary-light);
+  margin: 0 20px 4px;
+}
+
+/* ── Save status bar ─────────────────────────────────────────────── */
+#saveStatusBar { background-color: var(--clr-primary) !important; }
+
+/* ── Export button ───────────────────────────────────────────────── */
+#exportButton, #exportSearchButton {
+  background-color: var(--clr-primary) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 6px 14px !important;
+}
+
+
+/* ═══ Extracted from <style> (body outside template) ═══ */
+
+	.page-disclaimer {
+    font-size: 8px;
+    color: #555;
+    text-align: center;
+    padding: 4px 8px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+}
+   .tree-edit-input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+  
+#editModeModalOverlay {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+#editModeModal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.25);
+    text-align: center;
+    width: 300px;
+}
+
+#editModeModal input[type="password"] {
+    padding: 10px;
+    width: 90%;
+    margin-top: 10px;
+    font-size: 1em;
+}
+
+#editModeModal button {
+    margin-top: 15px;
+    margin-right: 10px;
+    padding: 8px 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* ===== Fullscreen Viewer (Image / 3D) ===== */
+#imageContainer{ position:relative; }
+
+#fullscreenBtn{
+  position:absolute;
+  left:12px;
+  bottom:12px;
+  z-index:50;
+  border:none;
+  cursor:pointer;
+  padding:8px 10px;
+  border-radius:10px;
+  background:rgba(17,24,39,.85);
+  color:#fff;
+  font-size:14px;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+}
+#fullscreenBtn:hover{ background:rgba(17,24,39,.95); }
+
+.viewer-fullscreen{
+  position:fixed !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100vh !important;
+  z-index:99999 !important;
+  background:#0b1220 !important;
+}
+
+.viewer-fullscreen #componentImage,
+.viewer-fullscreen model-viewer{
+  width:100% !important;
+  height:100% !important;
+  max-height:none !important;
+  object-fit:contain !important;
+}
+

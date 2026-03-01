@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>
+   eBOM Catalog
+  </title>
+
+  <!-- model-viewer (Web Component) for GLB/GLTF rendering -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Note: toggleEditMode and findNodeByName are defined later in the file in their correct context -->
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     eBOM Catalog  –  Professional Theme v2.0
+     © 2025 eBOM Catalog. All rights reserved.
+     Unauthorised copying or redistribution is prohibited.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+  <!-- Application styles -->
+  <link rel="stylesheet" href="css/ebom-catalog.css">
+  <!-- Application logic (defer: runs after DOM parsed, before DOMContentLoaded fires) -->
+  <script defer src="js/ebom-app.js"></script>
+</head>
+<body>
+	<div class="page-disclaimer">
+  	    DISCLAIMER: THIS PAGE WAS MADE AS A PERSONAL EDUCATIONAL PROJECT. This is NOT the official site of the company or brand identified on the page. This page is a personal project made in connection with an educational exercise.
+	</div>
+
+<header>
+  <button id="navToggleBtn" class="navToggle headerNavToggle" type="button" aria-label="Toggle menu" title="Toggle menu" onclick="toggleTabMenu()">☰</button>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <span id="appTitle" style="font-size:1em; letter-spacing:.5px;">eBOM Catalog</span>
+    <span style="font-size:.65em; color:#64748b; font-weight:400; letter-spacing:.2px;">v2.0</span>
+  </div>
+  <button id="langToggleBtn" onclick="toggleLanguage()" title="Switch language / Trocar idioma">PT</button>
+</header>
+<!-- Tab Navigation -->
+<div id="tabNav">
+  <div id="tabButtons">
+    <div class="tab active" onclick="switchTab('montagem')">HIERARCHY ASSEMBLY</div>
+    <div class="tab" onclick="switchTab('pesquisaMaterial')">MATERIAL SEARCH</div>
+    <div class="tab" onclick="switchTab('chat')">AI ASSISTANT</div>
+    <div class="tab" onclick="switchTab('checklistDigital')">CHECKLIST DIGITAL</div>
+    <div class="tab" onclick="switchTab('tools')" id="tab-tools">⚙ TOOLS</div>
+  </div>
+</div>
+<!-- Tab Content -->
+<div class="tabContent active" id="montagem">
+<div class="tab-import-bar">
+    <button class="toggle-import-bar" type="button" aria-label="Ocultar seção de importação" title="Ocultar">▲</button>
+<div class="tab-import-row">
+    <div class="tab-import-title">Load JSON - BOM</div>
+    <input accept=".json" id="fileInput" type="file" />
+    <button class="btn-accent" type="button" onclick="loadSistemaEquipamentoJSON()">Import</button>
+  </div>
+</div>
+<div id="mainContainer">
+<!-- Hierarchy Tree -->
+<div id="hierarchyTree">
+<div id="treeContent">
+</div>
+
+<div id="saveStatusBar" style="display:none; background-color:#FF9D6C; color:white; padding:5px; margin-bottom:5px; font-weight:bold; text-align:center;">
+  Salvando arquivo JSON...
+</div>
+<div id="editButtonContainer" style="position: absolute; bottom: 10px; left: 12px; z-index: 10;">
+<button id="editModeBtn" onclick="toggleEditMode()" style="margin-right: 5px;">
+       Modo Edição
+      </button>
+<button id="textEditBtn" onclick="toggleTextEdit()" style="display: none; margin-right: 5px; background-color: #cc0000">
+       Texto
+      </button>
+<button id="saveJsonBtn" onclick="saveEditedJson()" style="display: none; background-color: #cc0000">
+       Salvar
+      </button>
+<button id="addNodeBtn" onclick="addTreeNode()" style="margin-left: 5px; display: none; background-color: #cc0000">
+       + Adicionar
+      </button>
+<button id="removeNodeBtn" onclick="removeSelectedTreeNode()" style="margin-left: 5px; display: none; background-color: #cc0000">
+       − Remover
+      </button>
+</div>
+</div>
+<!-- Image Container -->
+<div id="imageContainer">
+
+<button id="fullscreenBtn" type="button" title="Tela cheia">⛶</button>
+
+<!-- DOC Button -->
+<button id="editDocButton" onclick="handleEditDocClick()" style="display: none; position: absolute; top: 5px; right: 100px; z-index: 10; background-color: #cc0000; color: white; font-weight: bold; border: none; padding: 5px 10px; cursor: pointer;">
+    ✎ Documentação
+</button>
+<button id="docButton" onclick="handleDocButtonClick()" style="position: absolute; top: 5px; right: 5px; z-index: 10; color: white; font-weight: bold; border: none; padding: 5px 10px; cursor: pointer;">
+        📓 Doc
+    </button>
+<!-- Edit Button for Images -->
+<button id="imageEditBtn" onclick="triggerImageUpload()" style="display: none; position: absolute; top: 5px; left: 5px; z-index: 10; background-color: #cc0000; color: white; font-weight: bold;">
+        Imagem
+    </button>
+<div id="imageInfo">0 / 0</div>
+<button id="prevImage" onclick="navigateImage(-1)" style="position: absolute; left: 1px; top: 50%; transform: translateY(-50%); display: inline-block;">❮</button>
+<img alt="Component Image" id="componentImage" style="display: none;"/>
+<model-viewer id="componentModel" src="" alt="3D model" camera-controls touch-action="pan-y" environment-image="neutral" exposure="1.0" shadow-intensity="0.6" loading="eager" reveal="auto"></model-viewer>
+<button id="nextImage" onclick="navigateImage(1)" style="position: absolute; right: 1px; top: 50%; transform: translateY(-50%); display: inline-block;">❯</button>
+<div id="zoomControls">
+<button onclick="zoomImage(1.1)">+</button>
+<button onclick="zoomImage(0.9)">-</button>
+<button onclick="resetZoom()">Reset</button>
+</div>
+</div>
+<!-- Bottom Section -->
+<div id="bottomContainer">
+<div class="bottom-section">
+<div style="display: flex; align-items: center; justify-content: space-between;">
+<h3>
+        Details
+       </h3>
+<button id="exportButton" onclick="exportToExcel()" style="margin-left: 10px; background-color: #FF7C3C; color: white; border: none; padding: 5px 10px; cursor: pointer;">
+        Export excel
+       </button>
+</div>
+<!-- Space for future table -->
+<div id="tableContainer" style="margin-top: -5px; font-size: 0.75em">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="tabContent" id="pesquisaMaterial">
+<div class="tab-import-bar">
+    <button class="toggle-import-bar" type="button" aria-label="Ocultar seção de importação" title="Ocultar">▲</button>
+<div class="tab-import-row">
+    <div class="tab-import-title">Importar JSON - Material search</div>
+    <input accept=".json" id="fileInputCadastro" type="file" />
+    <button class="btn-accent" type="button" onclick="loadBaseCadastroJSON()">Import</button>
+  </div>
+</div>
+<!-- Fields Container -->
+<div class="fields-container">
+<!-- Search Input Field with label above -->
+<div class="field input-container">
+<label for="searchInput">
+      Pesquisa:
+     </label>
+<input disabled="" id="searchInput" placeholder="Palavras-chave..." type="text"/>
+<select disabled="" id="searchCondition">
+<option value="E">
+       E
+      </option>
+<option value="OU">
+       OU
+      </option>
+</select>
+</div>
+<!-- Depósito Dropdown with label above -->
+<div class="field input-container">
+<label for="depositoFilter">
+      Estoque:
+     </label>
+<select disabled="" id="depositoFilter">
+<option value="">
+       Filter by Depósito
+      </option>
+</select>
+</div>
+<!-- Utilização Livre Checkbox -->
+<div class="checkbox-container input-container">
+<label>
+<input id="utilizacaoLivreCheckbox" type="checkbox"/>
+      Estoque &gt; 0
+     </label>
+</div>
+<!-- Filter Button -->
+<div class="field input-container">
+<button id="filterButton" onclick="filterData()" style="margin: 10px 0; font-weight: bold;">
+      Filtrar
+     </button>
+<button id="exportSearchButton" onclick="exportSearchResultsToExcel()" style="margin: 10px 0; font-weight: bold;">
+      Exportar Excel
+     </button>
+</div>
+<div id="resultCount" style="margin: 10px 0; font-weight: bold;">
+</div>
+</div>
+<div class="table-container">
+<table id="resultTable">
+<thead>
+<tr>
+<th>
+        Center
+       </th>
+<th>
+        Material
+       </th>
+<th>
+        Short description
+       </th>
+<th>
+        Long description
+       </th>
+<th>
+        Deposit
+       </th>
+<th>
+        Quantity
+       </th>
+</tr>
+</thead>
+<tbody>
+<!-- Search results will appear here -->
+</tbody>
+</table>
+</div>
+</div>
+<div class="tabContent" id="chat">
+<div class="tab-import-bar chat-import-spacer" aria-hidden="true"></div>
+
+<iframe frameborder="0" src="https://www.chatbase.co/chatbot-iframe/iqF116Gl34OFjEZ7p3zxX" style="height: 100%" width="100%">
+</iframe>
+</div>
+
+<div class="tabContent" id="checklistDigital">
+  <div class="tab-import-bar">
+    <button class="toggle-import-bar" title="Ocultar/Mostrar" aria-label="Ocultar seção de importação">▲</button>
+    <div class="tab-import-row">
+      <div class="tab-import-title">Checklist Digital</div>
+      <input type="file" id="checklistJsonInput" accept="application/json,.json" />
+      <button class="btn" id="checklistLoadBtn" type="button">Carregar JSON</button>
+      <span class="muted" id="checklistLoadStatus" style="font-size:12px;"></span>
+    </div>
+  </div>
+
+  <!-- Template do app do checklist (carregado dentro do iframe via srcdoc) -->
+  <template id="checklistAppTemplate">
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checklist Digital motiva</title>
+  <style>
+    :root {
+      --header-height: 5px;
+      --bg: #f4f5f7; --panel: #ffffff; --text: #111827; --muted: #6b7280; --border: #e5e7eb;
+      --focus: #3b82f6; --accent: #16a34a; --hover: #f9fafb;
+      --ok-bg: #dcfce7; --ok-border: #86efac; --ok-text: #065f46;
+      --nok-bg: #fee2e2; --nok-border: #fca5a5; --nok-text: #7f1d1d;
+      --none-bg: #f3f4f6; --none-text: #374151;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin:0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial; }
+    .app { display:grid; grid-template-rows: var(--header-height) 1fr; grid-template-columns: 1fr; grid-template-areas: "header" "main"; height:100vh; }
+    header { grid-area: header; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:var(--panel); border-bottom:1px solid var(--border); box-shadow:0 2px 10px rgba(17,24,39,0.06); }
+    .brand { display:flex; align-items:center; gap:12px; font-weight:700; }
+    .brand-badge { width:36px; height:36px; border-radius:8px; background:#ecfdf5; border:1px solid #a7f3d0; display:flex; align-items:center; justify-content:center; color:#065f46; font-size:18px; }
+    .brand-title { font-size:18px; }
+    .controls { display:flex; align-items:center; gap:8px; }
+    label { color:var(--muted); font-size:14px; }
+    select, input[type=text], input[type=number], input[type=date] { appearance:none; background:#ffffff; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px 12px; outline:none; }
+    select:focus, input:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(59,130,246,.25); }
+    .btn { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600; }
+    .btn:hover { background:#d1fae5; }
+    .btn.neutral { background:#ffffff; color:var(--text); border:1px solid var(--border); }
+    .btn.danger { background:#fee2e2; color:#7f1d1d; border:1px solid #fca5a5; }
+    .btn.primary { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+    .btn:disabled { opacity:.6; cursor:not-allowed; }
+    main { grid-area: main; padding:16px; overflow:auto; }
+    .card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 10px 24px rgba(17,24,39,0.08); }
+    .section-title { font-size:18px; font-weight:700; margin-bottom:8px; }
+    .muted { color: var(--muted); }
+    .file-row { display:flex; align-items:center; gap:12px; margin:12px 0; }
+
+    .general { display:grid; grid-template-columns: repeat(5, 1fr); gap:12px; margin:12px 0; }
+    .general .field { display:flex; flex-direction:column; gap:6px; }
+
+    .filters { display:grid; grid-template-columns: 1fr 1fr auto auto auto; gap:12px; align-items:end; margin-top:12px; }
+    .filters .group { display:flex; flex-direction:column; gap:6px; }
+    .filters .cols { display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
+    .filters .actions-left { display:flex; align-items:center; gap:8px; }
+    .right-tools { display:flex; gap:8px; align-items:center; justify-content:flex-start; }
+    .counter { font-size: 12px; font-weight:600; }
+
+    /* Ícone de filtro ao lado dos labels (Local / Sistema) */
+    .label-with-icon{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .label-with-icon svg{
+      width:14px;
+      height:14px;
+      color:var(--muted);
+      flex:0 0 auto;
+    }
+
+    .list { margin-top:12px; border:1px solid var(--border); border-radius:10px; overflow:auto; background:#ffffff; }
+    .list-header, .list-row { display:grid; gap:6px; align-items:center; padding:8px 10px; }
+    .list-header { position:sticky; top:0; background:#f9fafb; color:var(--muted); font-weight:600; border-bottom:1px solid var(--border); z-index:10; }
+    .list-row { border-bottom:1px dashed var(--border); }
+    .list-row:last-child { border-bottom:none; }
+    .list-col { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .list-col.wrap { white-space:normal; overflow:visible; text-overflow:clip; }
+    .label-inline { display:block; white-space:normal; }
+
+    .label-inline { color:var(--text); font-weight:600; }
+    .actions { display:flex; gap:8px; align-items:center; }
+    .icon-btn { background:#ffffff; border:1px solid var(--border); color:var(--text); border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .icon-btn:hover { background:var(--hover); }
+    svg { width:18px; height:18px; }
+
+    .statusbox { border-radius:10px; padding:4px; display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; transition: background-color .15s ease, border-color .15s ease; }
+    .statusbox label { font-size:12px; margin:0; }
+    .statusbox input { transform: scale(1.05); margin:0; }
+    .radio-line{ display:flex; align-items:center; justify-content:center; gap:4px; line-height:1; }
+    .ok-on { background:var(--ok-bg); border:1px solid var(--ok-border); color:var(--ok-text); }
+    .nok-on { background:var(--nok-bg); border:1px solid var(--nok-border); color:var(--nok-text); }
+    .cell-disabled { background:#f3f4f6; border:1px solid #e5e7eb; color:#6b7280; opacity:.8; }
+    .cell-disabled .mini { font-size:12px; color:#6b7280; }
+
+    .badge { display:inline-block; padding:2px 6px; border-radius:999px; background:#f3f4f6; color:#374151; font-size:12px; }
+
+    @media (max-width:1000px) { .list{ overflow-x:auto; } }
+    @media (max-width:740px) { .general { grid-template-columns:1fr; } .filters { grid-template-columns:1fr; } .list-header{ display:none; } .list-row{ grid-template-columns:1fr; gap:6px; } .actions{ justify-content:flex-start; } }
+  
+    /* ---------- Modais (OBS / Câmera / Confirmação PDF) ---------- */
+    .modal-backdrop{
+      display:none;
+      position:fixed; inset:0;
+      background:rgba(17,24,39,0.4);
+      align-items:center; justify-content:center;
+      z-index:1000;
+      padding:18px;
+    }
+    .modal{
+      width:min(880px, 96vw);
+      max-height:88vh;
+      overflow:auto;
+      background:#ffffff;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:16px;
+      box-shadow:0 24px 70px rgba(17,24,39,0.18);
+      color:var(--text);
+    }
+    .modal-title{
+      font-weight:800;
+      font-size:16px;
+      margin-bottom:10px;
+    }
+    .modal-content{ color:var(--text); }
+    .modal-actions{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      align-items:center;
+      margin-top:14px;
+      position:sticky;
+      bottom:-16px;
+      background:#fff;
+      padding-top:10px;
+      border-top:1px solid var(--border);
+    }
+    .close-btn{
+      background:#ffffff;
+      color:var(--text);
+      border:1px solid var(--border);
+      padding:8px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .close-btn:hover{ background:var(--hover); }
+
+    .input, textarea.input{
+      width:100%;
+      background:#ffffff;
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:10px 12px;
+      outline:none;
+      font-family: inherit;
+      font-size:14px;
+    }
+    textarea.input{ resize:vertical; min-height:120px; }
+    .input:focus, textarea.input:focus{
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+    }
+
+    /* Câmera: miniaturas */
+    .thumbs{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+    .thumbs img{
+      width:100%;
+      height:92px;
+      object-fit:cover;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#f9fafb;
+    }
+
+    /* Confirmação PDF: colaboradores */
+    #colabList{ display:flex; flex-direction:column; gap:10px; margin:10px 0 0 0; }
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 220px auto;
+      gap:10px;
+      align-items:center;
+    }
+    .row .icon-btn{ width:36px; height:36px; }
+    @media (max-width:740px){
+      .modal{ width:min(560px, 96vw); }
+      .row{ grid-template-columns: 1fr; }
+      .modal-actions{ flex-direction:column; align-items:stretch; }
+      .modal-actions .btn, .modal-actions .close-btn{ width:100%; }
+    }
+
+    /* Ajustes CARRO */
+    .list-header > div:nth-child(n+3){
+      font-size:11px;
+      font-weight:600;
+      text-align:center;
+      line-height:1.1;
+    }
+
+    /* Célula CARRO desabilitada mais escura */
+    .cell-disabled{
+      background:#e5e7eb !important;
+      border:1px solid #9ca3af !important;
+      color:#374151 !important;
+      opacity:1 !important;
+    }
+
+    /* Embutido no eMobi: o upload é feito na barra superior do eMobi */
+    .file-row{ display:none !important; }
+</style>
+</head>
+<body>
+  <div class="app" id="appRoot">
+    <main>
+      <div class="card">
+        <div class="section-title">Checklist digital</div>
+        <div class="muted">Este checklist é carregado pelo eTrilhos. Use a barra superior da aba para importar um arquivo <code>.json</code> com o esquema do formulário.</div>
+
+        <div class="file-row">
+          <input type="file" id="jsonInput" accept="application/json" />
+          <button class="btn" id="loadBtn">Carregar formulário</button>
+        </div>
+	
+      	<div class="controls">
+          <label for="unidade">Unidade</label>
+          <select id="unidade" name="unidade">
+            <option value="MB">MB</option>
+            <option value="ON">ON</option>
+            <option value="VM">VM</option>
+            <option value="VQ">VQ</option>
+            <option value="VT">VT</option>
+          </select>
+      	</div>
+
+        <!-- Dados gerais -->
+        <div id="generalHeader" class="general" style="display:none;">
+          <div class="field"><label for="date">Data</label><input type="date" id="date" /></div>
+          <div class="field"><label for="fleet">Frota</label>
+            <select id="fleet"><option value="">Selecione a Unidade</option></select>
+          </div>
+          <div class="field"><label for="train">Trem</label>
+            <select id="train"><option value="">Selecione a Frota</option></select>
+          </div>
+          <div class="field"><label for="workorder">Ordem de Serviço</label><input type="text" id="workorder" placeholder="OS" /></div>
+          <div class="field"><label for="mileage">Quilometragem</label><input type="number" id="mileage" min="0" step="1" /></div>
+        </div>
+
+        <!-- Filtros e ações -->
+	<div id="filters" class="filters" style="display:none;">
+
+  	<!-- Local -->
+  	<div class="group">
+  	  <label for="localSelect">Local</label>
+  	  <select id="localSelect">
+  	    <option value="__all__">Todos</option>
+  	  </select>
+  	</div>
+
+  	<!-- Sistema -->
+  	<div class="group">
+  	  <label for="sistemaSelect">Sistema</label>
+  	  <select id="sistemaSelect">
+  	    <option value="__all__">Todos</option>
+  	  </select>
+  	</div>
+
+  	<!-- Limpar filtros -->
+  	<div class="group">
+  	  <label>&nbsp;</label>
+  	  <button class="btn neutral" id="clearFilters">
+  	    Limpar filtros
+  	  </button>
+  	</div>
+
+  	<!-- Ações -->
+  	<div class="actions-left">
+  	  <button class="btn primary" id="startBtn">Start</button>
+  	  <button class="btn danger" id="stopBtn" disabled>Stop</button>
+  	</div>
+
+	<div class="right-tools">
+	  <div id="counter" class="counter">0 / 0</div>
+	  <button class="btn" id="markAllBtn" disabled>Marcar todos (OK)</button>
+	  <button class="btn neutral" id="clearStatusesBtn" disabled>Limpar</button>
+	  <button class="btn" id="pdfBtn">Concluir</button>
+	</div>
+	</div>
+
+        <div id="formContainer" class="form-section"></div>
+        <div id="messages" class="helper"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modals existentes -->
+  <div id="docModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="docModalTitle" style="display:none; position:fixed; inset:0; background:rgba(17,24,39,0.4); align-items:center; justify-content:center; z-index:1000;">
+    <div class="modal" style="width:min(840px, 92vw); background:#ffffff; border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 20px 60px rgba(17,24,39,0.1); color:var(--text);">
+      <div class="modal-title" id="docModalTitle" style="font-weight:700; margin-bottom:8px;">Documento de Referência</div>
+      <div class="modal-content" id="docModalContent"></div>
+      <div class="modal-actions" style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;"><button class="close-btn" id="docModalClose" style="background:#ffffff; color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:8px; cursor:pointer;">Fechar</button></div>
+    </div>
+  </div>
+  <div id="notesModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="notesModalTitle" style="display:none; position:fixed; inset:0; background:rgba(17,24,39,0.4); align-items:center; justify-content:center; z-index:1000;">
+    <div class="modal" style="width:min(840px, 92vw); background:#ffffff; border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 20px 60px rgba(17,24,39,0.1); color:var(--text);">
+      <div class="modal-title" id="notesModalTitle" style="font-weight:700; margin-bottom:8px;">Descrição Longa</div>
+      <div class="modal-content" id="notesModalContent"></div>
+      <div class="modal-actions" style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;"><button class="close-btn" id="notesModalClose" style="background:#ffffff; color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:8px; cursor:pointer;">Fechar</button></div>
+    </div>
+  </div>
+  <div id="addModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="addModalTitle" style="display:none; position:fixed; inset:0; background:rgba(17,24,39,0.4); align-items:center; justify-content:center; z-index:1000;">
+    <div class="modal" style="width:min(840px, 92vw); background:#ffffff; border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 20px 60px rgba(17,24,39,0.1); color:var(--text);">
+      <div class="modal-title" id="addModalTitle" style="font-weight:700; margin-bottom:8px;">Informações Adicionais</div>
+      <div class="modal-content" id="addModalContent"></div>
+      <div class="modal-actions" style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;"><button class="close-btn" id="addModalClose" style="background:#ffffff; color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:8px; cursor:pointer;">Fechar</button></div>
+    </div>
+  </div>
+
+  <!-- Novos modais: OBS e Câmera -->
+  <div id="obsModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="obsModalTitle" style="display:none; position:fixed; inset:0; background:rgba(17,24,39,0.4); align-items:center; justify-content:center; z-index:1000;">
+    <div class="modal">
+      <div class="modal-title" id="obsModalTitle">Observação</div>
+      <div class="modal-content">
+        <textarea id="obsTextarea" class="input" rows="6" placeholder="Digite sua observação..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="close-btn" id="obsCancelBtn">Cancelar</button>
+        <button class="btn" id="obsSaveBtn">Salvar</button>
+      </div>
+    </div>
+  </div>
+  <div id="camModalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="camModalTitle" style="display:none; position:fixed; inset:0; background:rgba(17,24,39,0.4); align-items:center; justify-content:center; z-index:1000;">
+    <div class="modal">
+      <div class="modal-title" id="camModalTitle">Anexar fotos</div>
+      <div class="modal-content">
+        <input type="file" id="camFileInput" accept="image/*" multiple />
+        <div id="camThumbs" class="thumbs"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="close-btn" id="camCancelBtn">Fechar</button>
+        <button class="btn" id="camSaveBtn">Salvar anexos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmação PDF (colaboradores) -->
+  <div id="pdfConfirmBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="pdfConfirmTitle" style="display:none; position:fixed; inset:0; background:rgba(17,24,39,0.4); align-items:center; justify-content:center; z-index:1000;">
+    <div class="modal">
+      <div class="modal-title" id="pdfConfirmTitle">Confirmação para gerar PDF</div>
+      <div class="modal-content">
+        <p class="muted">Informe os colaboradores que trabalharam na atividade:</p>
+        <div id="colabList"></div>
+        <button class="btn" id="addColabBtn" type="button">Incluir colaborador</button>
+      </div>
+      <div class="modal-actions">
+        <button class="close-btn" id="pdfCancelBtn">Cancelar</button>
+        <button class="btn" id="pdfConfirmBtn">Gerar PDF</button>
+        <button class="btn primary" id="pdfEmailBtn">Enviar por e-mail</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const jsonInput = document.getElementById('jsonInput');
+    const loadBtn = document.getElementById('loadBtn');
+    const formContainer = document.getElementById('formContainer');
+    const messages = document.getElementById('messages');
+    const filtersBox = document.getElementById('filters');
+    const generalHeader = document.getElementById('generalHeader');
+
+    const unidadeSel = document.getElementById('unidade');
+    const fleetSel = document.getElementById('fleet');
+    const trainSel = document.getElementById('train');
+
+    const localSelect = document.getElementById('localSelect');
+    const sistemaSelect = document.getElementById('sistemaSelect');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    const markAllBtn = document.getElementById('markAllBtn');
+    const clearStatusesBtn = document.getElementById('clearStatusesBtn');
+    const pdfBtn = document.getElementById('pdfBtn');
+    const counterEl = document.getElementById('counter');
+
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+
+    const docBackdrop = document.getElementById('docModalBackdrop');
+    const docContent = document.getElementById('docModalContent');
+    const docClose = document.getElementById('docModalClose');
+    const notesBackdrop = document.getElementById('notesModalBackdrop');
+    const notesContent = document.getElementById('notesModalContent');
+    const notesClose = document.getElementById('notesModalClose');
+    const addBackdrop = document.getElementById('addModalBackdrop');
+    const addContent = document.getElementById('addModalContent');
+    const addClose = document.getElementById('addModalClose');
+
+    const obsBackdrop = document.getElementById('obsModalBackdrop');
+    const obsTextarea = document.getElementById('obsTextarea');
+    const obsCancelBtn = document.getElementById('obsCancelBtn');
+    const obsSaveBtn = document.getElementById('obsSaveBtn');
+
+    const camBackdrop = document.getElementById('camModalBackdrop');
+    const camFileInput = document.getElementById('camFileInput');
+    const camThumbs = document.getElementById('camThumbs');
+    const camCancelBtn = document.getElementById('camCancelBtn');
+    const camSaveBtn = document.getElementById('camSaveBtn');
+
+    const pdfConfirmBackdrop = document.getElementById('pdfConfirmBackdrop');
+    const addColabBtn = document.getElementById('addColabBtn');
+    const pdfCancelBtn = document.getElementById('pdfCancelBtn');
+    const pdfConfirmBtn = document.getElementById('pdfConfirmBtn');
+    const pdfEmailBtn = document.getElementById('pdfEmailBtn');
+    const colabList = document.getElementById('colabList');
+
+    // Estado em memória (SEM localStorage)
+    let currentSchema = null;
+    let originalSchemaText = null;
+    let currentState = null;
+    const filtersState = { localSelected: null, sistemaSelected: null };
+
+    const slug = (s)=> (s||'').toString().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_\-]/g,'');
+    let isStarted = false, isStopped = false; let startedAt = null, stoppedAt = null;
+
+    let obsMap = {};    // { id: texto }
+    let attachMap = {}; // { id: [dataURL,...] }
+    let obsEditingItemId = null;
+    let camEditingItemId = null;
+
+    let carroColumns = [];
+
+    function clearContainer(){ formContainer.innerHTML=''; messages.textContent=''; }
+
+    function iconSVG(type){
+      if(type==='doc') return `<svg viewBox='0 0 24 24' fill='currentColor'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm0 2.5L19.5 10H14V4.5zM8 12h8v2H8v-2zm0 4h8v2H8v-2z'/></svg>`;
+      if(type==='notes') return `<svg viewBox='0 0 24 24' fill='currentColor'><path d='M5 3h14a2 2 0 0 1 2 2v11.586a2 2 0 0 1-.586 1.414l-3.414 3.414A2 2 0 0 1 15.586 22H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm2 4v2h10V7H7zm0 4v2h10v-2H7zm0 4v2h6v-2H7z'/></svg>`;
+      if(type==='add') return `<svg viewBox='0 0 24 24' fill='currentColor'><path d='M12 5v14m-7-7h14' stroke='currentColor' stroke-width='2' stroke-linecap='round'/></svg>`;
+      if(type==='obs') return `<svg viewBox='0 0 24 24' fill='currentColor'><path d='M4 4h16v12H5.17L4 17.17V4zm2 2v8h12V6H6zm2 12h8v2H8v-2z'/></svg>`;
+      if(type==='cam') return `<svg viewBox='0 0 24 24' fill='currentColor'><path d='M9 3l-2 2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2l-2-2H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10z'/></svg>`;
+      return '';
+    }
+
+    function openBackdrop(backdrop){ backdrop.style.display='flex'; }
+    function closeBackdrop(backdrop){ backdrop.style.display='none'; }
+
+    ;['docModalBackdrop','notesModalBackdrop','addModalBackdrop','obsModalBackdrop','camModalBackdrop','pdfConfirmBackdrop'].forEach(id=>{
+      const bp = document.getElementById(id);
+      bp.addEventListener('click',(e)=>{ if(e.target===bp) closeBackdrop(bp); });
+    });
+    docClose.addEventListener('click',()=> closeBackdrop(docBackdrop));
+    notesClose.addEventListener('click',()=> closeBackdrop(notesBackdrop));
+    addClose.addEventListener('click',()=> closeBackdrop(addBackdrop));
+    obsCancelBtn.addEventListener('click',()=> closeBackdrop(obsBackdrop));
+    camCancelBtn.addEventListener('click',()=> closeBackdrop(camBackdrop));
+
+    function norm(s){ return (s||'').toString().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase(); }
+    function matchesFilters(item){
+      const byLocal=!filtersState.localSelected || (item.local && norm(item.local)===norm(filtersState.localSelected));
+      const bySistema=!filtersState.sistemaSelected || (item.sistema && norm(item.sistema)===norm(filtersState.sistemaSelected));
+      return byLocal && bySistema;
+    }
+    function cleanHelper(helper){
+      if(!helper) return '';
+      const parts = helper.split('|').map(p=>p.trim()).filter(p=>!/^refer[eê]ncia:/i.test(p));
+      return parts.join(' | ');
+    }
+    function escapeHtml(str){
+      return (str===undefined||str===null)?'':String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    // --------- NOVO: detecção do "grupo Carro" no JSON ----------
+    const KNOWN_ITEM_KEYS = new Set([
+      'id','label','type','helper','descricao_longa','item_code',
+      'referencia_code','referencia_url','local','sistema','subsistema',
+      'carro','carros','Carro','Carros','carro_columns','carroColumns','carros_columns'
+    ]);
+
+    function getCarroGroupObject(item){
+      // Suporta várias grafias possíveis
+      return item.carros || item.carro || item.Carro || item.Carros || null;
+    }
+
+    function inferCarroColumns(schema){
+      // 1) Preferência: schema.carro_columns (já usado na v10.2)
+      if(Array.isArray(schema.carro_columns) && schema.carro_columns.length) return schema.carro_columns.slice();
+
+      // 2) Se existir grupo por item: item.carros / item.Carro / item.carro
+      const set = new Set();
+      (schema.sections||[]).forEach(sec=>{
+        (sec.items||[]).forEach(it=>{
+          const grp = getCarroGroupObject(it);
+          if(grp && typeof grp==='object' && !Array.isArray(grp)){
+            Object.keys(grp).forEach(k=> set.add(k));
+          }
+        });
+      });
+      if(set.size) return Array.from(set.values());
+
+      // 3) Fallback: inferir chaves booleanas "repetidas" nos itens (ex.: "C1","C2"...)
+      const boolKeyCount = new Map();
+      const totalItems = (schema.sections||[]).reduce((acc,s)=> acc + ((s.items||[]).length), 0) || 1;
+      (schema.sections||[]).forEach(sec=>{
+        (sec.items||[]).forEach(it=>{
+          Object.keys(it||{}).forEach(k=>{
+            if(KNOWN_ITEM_KEYS.has(k)) return;
+            const v = it[k];
+            if(typeof v === 'boolean'){
+              boolKeyCount.set(k, (boolKeyCount.get(k)||0) + 1);
+            }
+          });
+        });
+      });
+      // Mantém só as chaves que aparecem em pelo menos 10% dos itens (evita ruído)
+      const out = Array.from(boolKeyCount.entries())
+        .filter(([k,c])=> c >= Math.max(1, Math.floor(totalItems*0.10)))
+        .map(([k])=> k);
+
+      return out;
+    }
+
+    function isCarroEnabled(item, car){
+      // Regra: true => habilitado (radio OK/NOK). false => desabilitado, sem radios.
+      const grp = getCarroGroupObject(item);
+      if(grp && typeof grp==='object' && !Array.isArray(grp) && (car in grp)) return !!grp[car];
+      if(car in item && typeof item[car] === 'boolean') return !!item[car];
+      // Se não vier no JSON, considera habilitado (compatibilidade com JSON sem carro)
+      return true;
+    }
+    // ------------------------------------------------------------
+
+    function setRowGridStyle(el){
+      const base=['120px','1fr'];
+      const carWidth='70px'; // mais largo para dois radios
+      const tail=['110px','140px'];
+      const cols = base.concat(Array(carroColumns.length).fill(carWidth)).concat(tail).join(' ');
+      el.style.gridTemplateColumns = cols;
+    }
+
+    function persistCarStatus(id,carCol,status){
+      if(!currentState) currentState={general:{}, filters:{}, statuses:{}, window:{}, obs:{}, attach:{}};
+      if(!currentState.statuses[id] || typeof currentState.statuses[id]!=='object') currentState.statuses[id]={};
+      currentState.statuses[id][carCol]=status;
+    }
+
+    function getSavedStatus(itemId, car){
+      const savedPerItem = currentState && currentState.statuses ? currentState.statuses[itemId] : null;
+      return (savedPerItem && typeof savedPerItem==='object') ? (savedPerItem[car]||null) : null;
+    }
+
+    function getStatusFromDom(itemId, car){
+      const ok = document.getElementById(itemId+'__'+slug(car)+'__ok');
+      const nok = document.getElementById(itemId+'__'+slug(car)+'__nok');
+      if(ok && ok.checked) return 'OK';
+      if(nok && nok.checked) return 'NOK';
+      return null;
+    }
+
+    function renderSection(section){
+      const items = (section.items||[]).filter(matchesFilters);
+      if(items.length===0) return null;
+
+      const localSet = new Set();
+      items.forEach(it=>{ if(it.local && String(it.local).trim()) localSet.add(String(it.local).trim()); });
+      const localForSection = localSet.size===1? Array.from(localSet)[0] : (localSet.size>1? 'Vários' : '');
+
+      const wrapper = document.createElement('div');
+      const secTitle = document.createElement('h3');
+      secTitle.textContent = (localForSection? (localForSection+' - ') : '') + (section.name||'Seção');
+      secTitle.className='muted';
+      wrapper.appendChild(secTitle);
+
+      const list = document.createElement('div'); list.className='list';
+
+      const header = document.createElement('div'); header.className='list-header'; setRowGridStyle(header);
+      let headerHTML = '<div class="list-col">Código</div><div class="list-col">Descrição</div>';
+      carroColumns.forEach(c=>{ headerHTML += `<div class='list-col'>${escapeHtml(c)}</div>`; });
+      headerHTML += '<div class="list-col">Informações</div><div class="list-col">Input</div>';
+      header.innerHTML = headerHTML;
+      list.appendChild(header);
+
+      items.forEach(item=>{
+        const row = document.createElement('div'); row.className='list-row'; setRowGridStyle(row);
+
+        const colCode = document.createElement('div'); colCode.className='list-col'; colCode.textContent = item.item_code || '-';
+
+        const colLabel = document.createElement('div'); colLabel.className='list-col wrap';
+        const lab=document.createElement('label'); lab.className='label-inline'; lab.htmlFor=item.id; lab.textContent=item.label||'';
+        colLabel.appendChild(lab);
+
+        // Ações de info (documento, notas, etc.)
+        const colActions = document.createElement('div'); colActions.className='actions';
+        if(item.referencia_code || item.referencia_url){
+          const docBtn=document.createElement('button'); docBtn.className='icon-btn'; docBtn.title='Documento'; docBtn.innerHTML=iconSVG('doc');
+          docBtn.addEventListener('click',()=>{
+            const code=item.referencia_code||'Documento';
+            const url=item.referencia_url;
+            let html='';
+            if(url){
+              html = `<p><strong>${escapeHtml(code)}</strong>: <a class='link' href='${url}' target='_blank' rel='noopener noreferrer'>Abrir documento</a></p>`;
+            } else {
+              html = `<p><strong>${escapeHtml(code)}</strong></p>`;
+            }
+            docContent.innerHTML=html; openBackdrop(docBackdrop);
+          });
+          colActions.appendChild(docBtn);
+        }
+        if(item.descricao_longa){
+          const notesBtn=document.createElement('button'); notesBtn.className='icon-btn'; notesBtn.title='Notas'; notesBtn.innerHTML=iconSVG('notes');
+          notesBtn.addEventListener('click',()=>{
+            const html = `<div style='white-space:pre-wrap;'>${escapeHtml(item.descricao_longa)}</div>`;
+            notesContent.innerHTML=html; openBackdrop(notesBackdrop);
+          });
+          colActions.appendChild(notesBtn);
+        }
+        if(item.helper){
+          const addBtn=document.createElement('button'); addBtn.className='icon-btn'; addBtn.title='Informações adicionais'; addBtn.innerHTML=iconSVG('add');
+          addBtn.addEventListener('click',()=>{
+            const cleaned=cleanHelper(item.helper||'');
+            addContent.innerHTML=`<div style='white-space:pre-wrap;'>${escapeHtml(cleaned)}</div>`;
+            openBackdrop(addBackdrop);
+          });
+          colActions.appendChild(addBtn);
+        }
+
+        // Input (OBS/Câmera)
+        const colInput = document.createElement('div'); colInput.className='actions';
+        const obsBtn = document.createElement('button'); obsBtn.className='icon-btn'; obsBtn.title='OBS'; obsBtn.innerHTML=iconSVG('obs');
+        const camBtn = document.createElement('button'); camBtn.className='icon-btn'; camBtn.title='Câmera'; camBtn.innerHTML=iconSVG('cam');
+
+        const badgeObs = document.createElement('span'); badgeObs.className='badge'; badgeObs.id = 'badgeObs_'+item.id;
+        badgeObs.textContent = (obsMap[item.id] && obsMap[item.id].trim()) ? 'OBS' : '';
+
+        const badgeCam = document.createElement('span'); badgeCam.className='badge'; badgeCam.id = 'badgeCam_'+item.id;
+        badgeCam.textContent = (attachMap[item.id] && attachMap[item.id].length>0) ? (attachMap[item.id].length+' img') : '';
+
+        obsBtn.addEventListener('click',()=>{ obsEditingItemId=item.id; obsTextarea.value = obsMap[item.id] || ''; openBackdrop(obsBackdrop); });
+        camBtn.addEventListener('click',()=>{
+          camEditingItemId=item.id;
+          camFileInput.value='';
+          camThumbs.innerHTML='';
+          const imgs=(attachMap[item.id]||[]);
+          imgs.forEach(url=>{ const img=new Image(); img.src=url; camThumbs.appendChild(img); });
+          openBackdrop(camBackdrop);
+        });
+
+        colInput.appendChild(obsBtn); colInput.appendChild(camBtn);
+        colInput.appendChild(badgeObs); colInput.appendChild(badgeCam);
+
+        row.appendChild(colCode);
+        row.appendChild(colLabel);
+
+        // --------- COLUNAS CARRO (OK/NOK como RADIO) ----------
+        carroColumns.forEach(car=>{
+          const cell = document.createElement('div'); cell.className='list-col statusbox';
+
+          const enabled = isCarroEnabled(item, car);
+          if(!enabled){
+            cell.classList.add('cell-disabled');
+            const span=document.createElement('span'); span.className='mini'; span.textContent='—';
+            cell.appendChild(span);
+            row.appendChild(cell);
+            return;
+          }
+
+          const okId=item.id+'__'+slug(car)+'__ok';
+          const nokId=item.id+'__'+slug(car)+'__nok';
+          const groupName=item.id+'__'+slug(car)+'__grp';
+
+          const okRb=document.createElement('input'); okRb.type='radio'; okRb.name=groupName; okRb.id=okId; okRb.value='OK';
+          const nokRb=document.createElement('input'); nokRb.type='radio'; nokRb.name=groupName; nokRb.id=nokId; nokRb.value='NOK';
+
+          const savedStatus = getSavedStatus(item.id, car);
+          if(savedStatus==='OK'){ okRb.checked=true; cell.classList.add('ok-on'); }
+          else if(savedStatus==='NOK'){ nokRb.checked=true; cell.classList.add('nok-on'); }
+
+          okRb.disabled = !isStarted || isStopped;
+          nokRb.disabled = !isStarted || isStopped;
+
+          const onChange = ()=>{
+            if(!isStarted || isStopped){
+              // bloqueia alteração (garante consistência)
+              const st = getSavedStatus(item.id, car);
+              okRb.checked = (st==='OK');
+              nokRb.checked = (st==='NOK');
+              return;
+            }
+            const st = okRb.checked ? 'OK' : (nokRb.checked ? 'NOK' : null);
+            cell.classList.toggle('ok-on', st==='OK');
+            cell.classList.toggle('nok-on', st==='NOK');
+            persistCarStatus(item.id, car, st);
+            updateCounters();
+          };
+          okRb.addEventListener('change', onChange);
+          nokRb.addEventListener('change', onChange);
+
+          const okLbl=document.createElement('label'); okLbl.htmlFor=okId; okLbl.textContent='✓';
+          const nokLbl=document.createElement('label'); nokLbl.htmlFor=nokId; nokLbl.textContent='X';
+
+          const lineOk=document.createElement('div'); lineOk.className='radio-line';
+          lineOk.appendChild(okRb); lineOk.appendChild(okLbl);
+          const lineNok=document.createElement('div'); lineNok.className='radio-line';
+          lineNok.appendChild(nokRb); lineNok.appendChild(nokLbl);
+          cell.appendChild(lineOk); cell.appendChild(lineNok);
+
+          row.appendChild(cell);
+        });
+        // ------------------------------------------------------
+
+        row.appendChild(colActions);
+        row.appendChild(colInput);
+        list.appendChild(row);
+      });
+
+      wrapper.appendChild(list);
+      return wrapper;
+    }
+    function initStateForSchema(){
+      currentState = {
+        general:{ date:'', fleet:'', train:'', workorder:'', mileage:'' },
+        filters:{ localSelected:null, sistemaSelected:null },
+        statuses:{},
+        window:{ isStarted:false, isStopped:false, startedAt:null, stoppedAt:null },
+        obs:{},
+        attach:{}
+      };
+      filtersState.localSelected = null;
+      filtersState.sistemaSelected = null;
+      isStarted = false; isStopped = false;
+      startedAt = null; stoppedAt = null;
+      obsMap = currentState.obs;
+      attachMap = currentState.attach;
+    }
+
+    function renderForm(schema, opts={}){
+      const resetState = !!opts.resetState;
+
+      if(resetState || !currentSchema){
+        currentSchema = schema;
+        carroColumns = inferCarroColumns(schema);
+        initStateForSchema();
+      } else {
+        // mesmo schema (ex.: filtros) — mantém estado
+        currentSchema = schema;
+        carroColumns = inferCarroColumns(schema);
+        // sincroniza mapas
+        obsMap = currentState.obs || {};
+        attachMap = currentState.attach || {};
+      }
+
+      clearContainer();
+      generalHeader.style.display='grid';
+      filtersBox.style.display='grid';
+
+      const title=document.createElement('h2');
+      title.className='section-title';
+      title.textContent = schema.title || 'Formulário';
+      formContainer.appendChild(title);
+
+      // Preenche campos gerais a partir do estado atual
+      setInputValue('date', currentState.general.date || '');
+      setSelectOptionsByUnidade(unidadeSel.value);
+
+      if(currentState.general.fleet){ fleetSel.value = currentState.general.fleet; } else { fleetSel.value=''; }
+      updateTrainOptions();
+      if(currentState.general.train){ trainSel.value = currentState.general.train; } else { trainSel.value=''; }
+
+      setInputValue('workorder', currentState.general.workorder || '');
+      setInputValue('mileage', currentState.general.mileage || '');
+
+      buildFilterOptions(schema);
+
+      (schema.sections||[]).forEach(section=>{
+        const secEl=renderSection(section);
+        if(secEl) formContainer.appendChild(secEl);
+      });
+
+      // listeners (sem persistência)
+      ['date','workorder','mileage'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){
+          el.addEventListener('change', ()=>{
+            currentState.general[id] = el.value || '';
+          });
+        }
+      });
+
+      fleetSel.addEventListener('change', ()=>{
+        currentState.general.fleet = fleetSel.value;
+        updateTrainOptions();
+        currentState.general.train = '';
+        trainSel.value = '';
+      });
+
+      trainSel.addEventListener('change', ()=>{
+        currentState.general.train = trainSel.value;
+      });
+
+      updateCounters();
+      updateUIState();
+    }
+
+    function setInputValue(id,val){ const el=document.getElementById(id); if(el) el.value=val; }
+    function buildFilterOptions(schema){
+      const allItems=[];
+      (schema.sections||[]).forEach(s=>{ (s.items||[]).forEach(it=>allItems.push(it)); });
+
+      // Locais
+      const localsMap=new Map();
+      const sistemasMapAll=new Map();
+
+      allItems.forEach(it=>{
+        const l=(it.local||'').toString().trim();
+        if(l && norm(l)!=='nan'){
+          const key=norm(l);
+          if(!localsMap.has(key)) localsMap.set(key,l);
+        }
+        const s=(it.sistema||'').toString().trim();
+        if(s && norm(s)!=='nan'){
+          const keyS=norm(s);
+          if(!sistemasMapAll.has(keyS)) sistemasMapAll.set(keyS,s);
+        }
+      });
+
+      const locals=Array.from(localsMap.values()).sort((a,b)=>a.localeCompare(b));
+      localSelect.innerHTML = '<option value="__all__">Todos</option>' + locals.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+
+      // Mantém seleção atual (se existir)
+      if(filtersState.localSelected){
+        const exists=locals.find(v=>norm(v)===norm(filtersState.localSelected));
+        localSelect.value = exists || '__all__';
+        if(!exists) filtersState.localSelected=null;
+      } else {
+        localSelect.value='__all__';
+      }
+
+      // Sistemas (filtrado por Local quando aplicável)
+      const sistemasMap=new Map();
+      if(filtersState.localSelected){
+        allItems
+          .filter(it=>it.local && norm(it.local)===norm(filtersState.localSelected))
+          .forEach(it=>{
+            const s=(it.sistema||'').toString().trim();
+            if(s && norm(s)!=='nan'){
+              const key=norm(s);
+              if(!sistemasMap.has(key)) sistemasMap.set(key,s);
+            }
+          });
+      } else {
+        sistemasMapAll.forEach((orig,key)=>sistemasMap.set(key,orig));
+      }
+
+      const sistemas=Array.from(sistemasMap.values()).sort((a,b)=>a.localeCompare(b));
+      sistemaSelect.innerHTML = '<option value="__all__">Todos</option>' + sistemas.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+
+      if(filtersState.sistemaSelected){
+        const existsS=sistemas.find(v=>norm(v)===norm(filtersState.sistemaSelected));
+        sistemaSelect.value = existsS || '__all__';
+        if(!existsS) filtersState.sistemaSelected=null;
+      } else {
+        sistemaSelect.value='__all__';
+      }
+    }
+
+    function updateCounters(){
+      if(!currentSchema){ counterEl.textContent='0 / 0'; return; }
+      let totalEnabled=0, marked=0;
+      (currentSchema.sections||[]).forEach(section=>{
+        (section.items||[]).forEach(item=>{
+          if(matchesFilters(item)){
+            carroColumns.forEach(car=>{
+              const enabled = isCarroEnabled(item, car);
+              if(enabled){
+                totalEnabled++;
+                const st = getStatusFromDom(item.id, car);
+                if(st) marked++;
+              }
+            });
+          }
+        });
+      });
+      counterEl.textContent = `${marked} / ${totalEnabled}`;
+    }
+
+    function updateUIState(){
+      const enabled = isStarted && !isStopped;
+      markAllBtn.disabled=!enabled;
+      clearStatusesBtn.disabled=!enabled;
+      stopBtn.disabled=!isStarted || isStopped;
+      startBtn.disabled=isStarted && !isStopped;
+
+      if(currentSchema){
+        (currentSchema.sections||[]).forEach(section=>{
+          (section.items||[]).forEach(item=>{
+            carroColumns.forEach(car=>{
+              const ok=document.getElementById(item.id+'__'+slug(car)+'__ok');
+              const nok=document.getElementById(item.id+'__'+slug(car)+'__nok');
+              const enabledCell = isCarroEnabled(item, car);
+              if(ok) ok.disabled=!enabled || !enabledCell;
+              if(nok) nok.disabled=!enabled || !enabledCell;
+            });
+          });
+        });
+      }
+    }
+    // Filtros (mantém estado em memória; apenas re-renderiza)
+    function rerenderKeepState(){
+      if(!currentSchema) return;
+      // guarda estado no objeto
+      currentState.filters.localSelected = filtersState.localSelected;
+      currentState.filters.sistemaSelected = filtersState.sistemaSelected;
+      currentState.window = { isStarted, isStopped, startedAt, stoppedAt };
+      currentState.obs = obsMap;
+      currentState.attach = attachMap;
+      renderForm(currentSchema, { resetState:false });
+    }
+
+    localSelect.addEventListener('change',()=>{
+      const val=localSelect.value;
+      filtersState.localSelected=(val==='__all__')? null : val;
+      // ao trocar Local, reseta Sistema se ficar inválido
+      filtersState.sistemaSelected = null;
+      rerenderKeepState();
+    });
+
+    sistemaSelect.addEventListener('change',()=>{
+      const val=sistemaSelect.value;
+      filtersState.sistemaSelected=(val==='__all__')? null : val;
+      rerenderKeepState();
+    });
+
+    clearFiltersBtn.addEventListener('click',()=>{
+      filtersState.localSelected=null;
+      filtersState.sistemaSelected=null;
+      rerenderKeepState();
+    });
+
+    // Start/Stop
+
+    // Start/Stop
+    startBtn.addEventListener('click',()=>{
+      if(!currentSchema){ messages.textContent='Carregue um JSON antes de iniciar.'; return; }
+      if(isStarted && !isStopped){ messages.textContent='Já iniciado.'; return; }
+      isStarted=true; isStopped=false;
+      startedAt=new Date().toISOString();
+      messages.textContent='Preenchimento iniciado: '+new Date(startedAt).toLocaleString('pt-BR');
+      updateUIState();
+    });
+    stopBtn.addEventListener('click',()=>{
+      if(!isStarted){ messages.textContent='Clique em Start antes de parar.'; return; }
+      if(isStopped){ messages.textContent='Já finalizado.'; return; }
+      isStopped=true;
+      stoppedAt=new Date().toISOString();
+      messages.textContent='Preenchimento finalizado: '+new Date(stoppedAt).toLocaleString('pt-BR');
+      updateUIState();
+    });
+
+    // Limpar status
+    clearStatusesBtn.addEventListener('click',()=>{
+      if(!currentSchema) return;
+      (currentSchema.sections||[]).forEach(section=>{
+        (section.items||[]).forEach(item=>{
+          if(matchesFilters(item)){
+            carroColumns.forEach(car=>{
+              if(isCarroEnabled(item, car)){
+                const ok=document.getElementById(item.id+'__'+slug(car)+'__ok');
+                const nok=document.getElementById(item.id+'__'+slug(car)+'__nok');
+                const cell=ok? ok.parentElement : (nok? nok.parentElement : null);
+                if(ok) ok.checked=false;
+                if(nok) nok.checked=false;
+                if(cell){ cell.classList.remove('ok-on'); cell.classList.remove('nok-on'); }
+                persistCarStatus(item.id, car, null);
+              }
+            });
+          }
+        });
+      });
+      updateCounters();
+    });
+
+    // Marcar todos OK
+    markAllBtn.addEventListener('click',()=>{
+      if(!currentSchema || !isStarted || isStopped) return;
+      (currentSchema.sections||[]).forEach(section=>{
+        (section.items||[]).forEach(item=>{
+          if(matchesFilters(item)){
+            carroColumns.forEach(car=>{
+              if(isCarroEnabled(item, car)){
+                const ok=document.getElementById(item.id+'__'+slug(car)+'__ok');
+                const nok=document.getElementById(item.id+'__'+slug(car)+'__nok');
+                const cell=ok? ok.parentElement : null;
+                if(ok) ok.checked=true;
+                if(nok) nok.checked=false;
+                if(cell){ cell.classList.add('ok-on'); cell.classList.remove('nok-on'); }
+                persistCarStatus(item.id, car, 'OK');
+              }
+            });
+          }
+        });
+      });
+      updateCounters();
+    });
+
+    // OBS
+    obsSaveBtn.addEventListener('click',()=>{
+      if(!obsEditingItemId) { closeBackdrop(obsBackdrop); return; }
+      const t = obsTextarea.value || '';
+      obsMap[obsEditingItemId] = t;
+      const badge = document.getElementById('badgeObs_'+obsEditingItemId);
+      if(badge) badge.textContent = t.trim() ? 'OBS' : '';
+      closeBackdrop(obsBackdrop);
+    });
+
+    // Câmera/anexos
+    camSaveBtn.addEventListener('click',()=>{
+      if(!camEditingItemId) { closeBackdrop(camBackdrop); return; }
+      const files = camFileInput.files;
+      if(files && files.length){
+        const toRead = Array.from(files);
+        let pending = toRead.length;
+        attachMap[camEditingItemId] = attachMap[camEditingItemId] || [];
+        toRead.forEach(f => {
+          const r = new FileReader();
+          r.onload = (ev)=>{
+            const url = ev.target.result;
+            attachMap[camEditingItemId].push(url);
+            const img = new Image(); img.src = url; camThumbs.appendChild(img);
+            pending--;
+            if(pending===0){
+              const badge = document.getElementById('badgeCam_'+camEditingItemId);
+              if(badge) badge.textContent = attachMap[camEditingItemId].length + ' img';
+            }
+          };
+          r.readAsDataURL(f);
+        });
+      }
+      closeBackdrop(camBackdrop);
+    });
+
+    // PDF
+        pdfCancelBtn.addEventListener('click',()=> closeBackdrop(pdfConfirmBackdrop));
+    addColabBtn.addEventListener('click',()=> addColabRow());
+        function generateAndPrintReport(colaboradores){
+      const html = buildReportHTML(colaboradores);
+      closeBackdrop(pdfConfirmBackdrop);
+      const win = window.open('', '_blank');
+      if(!win) return null;
+      win.document.open(); win.document.write(html); win.document.close();
+      setTimeout(()=>win.print(), 300);
+      return win;
+    }
+
+    function openEmailCompose(){
+      const wo = (document.getElementById('workorder')?.value || '').toString().trim();
+      const frota = (document.getElementById('fleet')?.value || '').toString().trim();
+      const trem = (document.getElementById('train')?.value || '').toString().trim();
+      const text = `Segue anexo checklist de Manutenção OS ${wo || ''}`.trim();
+      const subject = `Manutenção Preventiva OS: ${wo}/${frota}-${trem}`.trim();
+      const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+      window.open(mailto, '_blank');
+    }
+
+    // Concluir -> abre modal (mesma lógica anterior)
+    pdfBtn.addEventListener('click',()=>{ colabList.innerHTML=''; addColabRow(); openBackdrop(pdfConfirmBackdrop); });
+    pdfCancelBtn.addEventListener('click',()=> closeBackdrop(pdfConfirmBackdrop));
+    addColabBtn.addEventListener('click',()=> addColabRow());
+
+    // Gerar PDF (apenas impressão)
+    pdfConfirmBtn.addEventListener('click',()=>{
+      const colaboradores = collectColabs();
+      generateAndPrintReport(colaboradores);
+    });
+
+    // Enviar por e-mail (gera/abre impressão + abre e-mail pré-preenchido)
+    pdfEmailBtn.addEventListener('click',()=>{
+      setTimeout(openEmailCompose, 350);
+    });
+
+    function addColabRow(){
+      const row=document.createElement('div'); row.className='row';
+
+      const nameInput=document.createElement('input');
+      nameInput.className='input'; nameInput.type='text'; nameInput.placeholder='Nome';
+
+      const idInput=document.createElement('input');
+      idInput.className='input'; idInput.type='text'; idInput.placeholder='Matrícula';
+
+      const rm=document.createElement('button');
+      rm.type='button'; rm.className='icon-btn'; rm.title='Remover colaborador';
+      rm.innerHTML=`<svg viewBox='0 0 24 24' fill='currentColor'><path d='M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9z'/></svg>`;
+      rm.addEventListener('click',()=> row.remove());
+
+      row.appendChild(nameInput);
+      row.appendChild(idInput);
+      row.appendChild(rm);
+      colabList.appendChild(row);
+    }
+    function collectColabs(){
+      const rows=Array.from(colabList.querySelectorAll('.row'));
+      return rows.map(r=>{
+        const inputs = r.querySelectorAll('input');
+        const nm = inputs[0]; const id = inputs[1];
+        return { nome:(nm&&nm.value||'').trim(), matricula:(id&&id.value||'').trim() };
+      }).filter(c=> c.nome || c.matricula );
+    }
+
+        function buildReportHTML(colabs){
+      const mileageRaw = (document.getElementById('mileage').value||'').toString().trim();
+      const mileageNum = mileageRaw ? Number(String(mileageRaw).replace(/\./g,'').replace(',','.')) : NaN;
+      const mileageFmt = (mileageRaw && Number.isFinite(mileageNum)) ? new Intl.NumberFormat('pt-BR').format(mileageNum) : mileageRaw;
+
+      const general = {
+        Unidade: unidadeSel.value||'',
+        Data: document.getElementById('date').value||'',
+        Frota: fleetSel.value||'',
+        Trem: trainSel.value||'',
+        'Ordem de Serviço': document.getElementById('workorder').value||'',
+        Quilometragem: mileageFmt || '',
+        Início: startedAt? new Date(startedAt).toLocaleString('pt-BR'): '',
+        Fim: stoppedAt? new Date(stoppedAt).toLocaleString('pt-BR'): ''
+      };
+      const filtros = {
+        'Filtros Aplicados': '',
+        Local: filtersState.localSelected || 'Todos',
+        Sistema: filtersState.sistemaSelected || 'Todos'
+      };
+
+      // ---------- Seção 2: Lista detalhada (com colunas CARRO) ----------
+      const rowsAtividades = [];
+      (currentSchema.sections||[]).forEach(section=>{
+        (section.items||[]).forEach(item=>{
+          if(!matchesFilters(item)) return;
+          const row = {
+            sec: (item.local? item.local+' - ' : '') + (section.name||'Seção'),
+            code: item.item_code || '-',
+            label: item.label || '',
+            perCar: {}
+          };
+          carroColumns.forEach(car=>{
+            const enabled = isCarroEnabled(item, car);
+            const st = enabled ? (getStatusFromDom(item.id, car) || null) : '__DISABLED__';
+            row.perCar[car] = st;
+          });
+          rowsAtividades.push(row);
+        });
+      });
+
+      // ---------- Seção 3: Comentários e anexos (agrupados por Código) ----------
+      const byCode = new Map(); // code -> {code, label, sec, obs:[], imgs:[]}
+      (currentSchema.sections||[]).forEach(section=>{
+        (section.items||[]).forEach(item=>{
+          if(!matchesFilters(item)) return;
+          const code = item.item_code || '-';
+          const obs = (obsMap[item.id]||'').toString();
+          const imgs = (attachMap[item.id]||[]);
+          const hasObs = obs.trim().length>0;
+          const hasImgs = Array.isArray(imgs) && imgs.length>0;
+          if(!hasObs && !hasImgs) return;
+
+          if(!byCode.has(code)){
+            byCode.set(code, {
+              code,
+              label: item.label || '',
+              sec: (item.local? item.local+' - ' : '') + (section.name||'Seção'),
+              obs: [],
+              imgs: []
+            });
+          }
+          const ref = byCode.get(code);
+          if(hasObs) ref.obs.push(obs.trim());
+          if(hasImgs) ref.imgs.push(...imgs);
+        });
+      });
+      const commentGroups = Array.from(byCode.values());
+
+      // ---------- Seção 4: Executantes ----------
+      const execs = Array.isArray(colabs) ? colabs : [];
+
+      const style = `<style>
+        body{ font-family: Arial, sans-serif; color:#111; padding:20px; background:#ffffff; }
+        h1{ margin:0 0 8px 0; font-size:20px; }
+        h2{ margin:18px 0 8px 0; font-size:16px; }
+        .grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; }
+        table{ width:100%; border-collapse: collapse; margin-top:10px; }
+        th, td{ border:1px solid #e5e7eb; padding:7px 8px; vertical-align:top; }
+        th{ background:#f9fafb; text-align:left; }
+        .right{ text-align:right; }
+        .muted{ color:#6b7280; }
+        .footer{ margin-top:14px; font-weight:bold; }
+        .status-ok{ background:#dcfce7; color:#065f46; text-align:center; font-weight:700; }
+        .status-nok{ background:#fee2e2; color:#7f1d1d; text-align:center; font-weight:700; }
+        .status-none{ background:#f3f4f6; color:#374151; text-align:center; }
+        .status-disabled{ background:#e5e7eb; color:#374151; text-align:center; }
+        .code-title{ font-weight:800; }
+        .comment-block{ border:1px solid #e5e7eb; border-radius:10px; padding:10px 12px; margin:10px 0; }
+        .comment-meta{ margin-bottom:6px; }
+        .comment-text{ white-space:pre-wrap; border-left:3px solid #e5e7eb; padding-left:10px; margin:6px 0; }
+        .img-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:8px; }
+        .img-grid img{ width:100%; height:170px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb; }
+        @media print{
+          .img-grid img{ height:140px; }
+        }
+      </style>`;
+
+      const genHTML = Object.entries(general).map(([k,v])=>`<div><strong>${escapeHtml(k)}:</strong> ${escapeHtml(v)}</div>`).join('');
+      const filtHTML= Object.entries(filtros).map(([k,v])=>`<div><strong>${escapeHtml(k)}:</strong> ${escapeHtml(v)}</div>`).join('');
+
+      const carroTh = carroColumns.map(c=>`<th class="right">${escapeHtml(c)}</th>`).join('');
+      const atividadeRows = rowsAtividades.map(r=>{
+        const tdsCars = carroColumns.map(car=>{
+          const st = r.perCar[car];
+          if(st === '__DISABLED__'){
+            return `<td class="right status-disabled">—</td>`;
+          }
+          if(st === 'OK'){
+            return `<td class="right status-ok">✓</td>`;
+          }
+          if(st === 'NOK'){
+            return `<td class="right status-nok">X</td>`;
+          }
+          return `<td class="right status-none">—</td>`;
+        }).join('');
+        return `<tr>
+          <td>${escapeHtml(r.sec)}</td>
+          <td>${escapeHtml(r.code)}</td>
+          <td>${escapeHtml(r.label)}</td>
+          ${tdsCars}
+        </tr>`;
+      }).join('');
+
+      // Comentários e anexos
+      const commentsHTML = commentGroups.length ? commentGroups.map(g=>{
+        const obsHtml = (g.obs||[]).map((t,i)=>`<div class="comment-text">${escapeHtml(t)}</div>`).join('');
+        const imgs = (g.imgs||[]);
+        const imgsHtml = imgs.length ? `<div class="img-grid">${imgs.map(src=>`<img src="${src}" alt="Anexo" />`).join('')}</div>` : '';
+        return `<div class="comment-block">
+          <div class="comment-meta">
+            <div class="code-title">${escapeHtml(g.code)} — ${escapeHtml(g.label)}</div>
+            <div class="muted">${escapeHtml(g.sec)}</div>
+          </div>
+          ${obsHtml || '<div class="muted">Sem comentários.</div>'}
+          ${imgsHtml}
+        </div>`;
+      }).join('') : `<div class="muted">Nenhum comentário ou anexo foi inserido nos itens visíveis.</div>`;
+
+      // Executantes
+      const execRows = execs.map(e=>`<tr><td>${escapeHtml(e.nome||'')}</td><td>${escapeHtml(e.matricula||'')}</td></tr>`).join('');
+      const execTable = execs.length
+        ? `<table><thead><tr><th>Nome do colaborador</th><th>Matrícula</th></tr></thead><tbody>${execRows}</tbody></table>`
+        : `<div class="muted">Nenhum executante informado.</div>`;
+
+      // Totais (somente itens habilitados)
+      let totalEnabled=0, marked=0;
+      rowsAtividades.forEach(r=>{
+        carroColumns.forEach(car=>{
+          const st = r.perCar[car];
+          if(st === '__DISABLED__') return;
+          totalEnabled++;
+          if(st==='OK' || st==='NOK') marked++;
+        });
+      });
+
+      return `<!DOCTYPE html><html><head><meta charset='utf-8'/>${style}</head><body>
+        <h1>Relatório FSM motiva - MRO</h1>
+
+        <h2>1) Cabeçalho com dados gerais</h2>
+        <div class='grid'>${genHTML}${filtHTML}</div>
+
+        <h2>2) Lista detalhada de atividades</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Seção</th>
+              <th>Código</th>
+              <th>Descrição</th>
+              ${carroTh}
+            </tr>
+          </thead>
+          <tbody>${atividadeRows || `<tr><td colspan="${3+carroColumns.length}">Nenhuma atividade visível.</td></tr>`}</tbody>
+        </table>
+        <div class='footer'>Total geral (itens habilitados): ${marked} / ${totalEnabled}</div>
+
+        <h2>3) Comentários e anexos</h2>
+        ${commentsHTML}
+
+        <h2>4) Executantes</h2>
+        ${execTable}
+      </body></html>`;
+    }
+
+    // Unidade > Frota > Trem
+    const frotaMap = {
+      MB: { frotas: ['Série 1000', 'Série 2000'], trens: { 'Série 1000': ['101','102','103','104','105','106'], 'Série 2000': Array.from({length:234-201+1}, (_,i)=> String(201+i)) } },
+      ON: { frotas: ['Série 7000', 'Série 8900'], trens: { 'Série 7000': Array.from({length:61-43+1}, (_,i)=> 'C'+String(43+i)), 'Série 8900': Array.from({length:36}, (_,i)=> 'A'+String(i+1).padStart(2,'0')) } },
+      VM: { frotas: ['Frota P'], trens: { 'Frota P': Array.from({length:534-501+1}, (_,i)=> String(501+i)) } },
+      VQ: { frotas: ['Série 400'], trens: { 'Série 400': Array.from({length:429-401+1}, (_,i)=> String(401+i)) } },
+      VT: { frotas: ['Citadis 402'], trens: { 'Citadis 402': Array.from({length:132-101+1}, (_,i)=> String(101+i)) } },
+    };
+
+    function setSelectOptionsByUnidade(unid){
+      const m = frotaMap[unid];
+      fleetSel.innerHTML = '';
+      trainSel.innerHTML = '';
+      if(!m){
+        fleetSel.innerHTML = '<option value="">Selecione a Unidade</option>';
+        trainSel.innerHTML = '<option value="">Selecione a Frota</option>';
+        return;
+      }
+      const opts = m.frotas.map(f=> `<option value='${escapeHtml(f)}'>${escapeHtml(f)}</option>`).join('');
+      fleetSel.innerHTML = '<option value="">Selecione</option>' + opts;
+      trainSel.innerHTML = '<option value="">Selecione a Frota</option>';
+    }
+    function updateTrainOptions(){
+      const unid = unidadeSel.value;
+      const m=frotaMap[unid];
+      const selectedF=fleetSel.value;
+      trainSel.innerHTML='';
+      if(!m || !selectedF){ trainSel.innerHTML='<option value="">Selecione a Frota</option>'; return; }
+      const arr = m.trens[selectedF] || [];
+      const opts = arr.map(t=> `<option value='${escapeHtml(t)}'>${escapeHtml(t)}</option>`).join('');
+      trainSel.innerHTML = '<option value="">Selecione</option>' + opts;
+    }
+
+    unidadeSel.addEventListener('change', ()=>{
+      setSelectOptionsByUnidade(unidadeSel.value);
+      updateTrainOptions();
+
+      // mantém o formulário carregado (se houver) mas reinicia o estado (sem persistência)
+      if(!originalSchemaText){
+        messages.textContent='Carregue um JSON novamente (nenhum arquivo armazenado).';
+        return;
+      }
+      try {
+        const schema = JSON.parse(originalSchemaText);
+        renderForm(schema, { resetState:true });
+      } catch(e){
+        messages.textContent='Erro ao recarregar JSON: '+e.message;
+      }
+    });
+
+    loadBtn.addEventListener('click', async ()=>{
+      clearContainer();
+      const file = jsonInput.files && jsonInput.files[0];
+      if(!file){ messages.textContent='Selecione um arquivo JSON primeiro.'; return; }
+
+      try{
+        const text = await file.text();
+        originalSchemaText = text;
+        const schema = JSON.parse(text);
+        if(!schema || !schema.sections){
+          messages.textContent='Formato inválido. Verifique se o JSON contém o campo "sections".';
+          return;
+        }
+        renderForm(schema, { resetState:true });
+      } catch(e){
+        console.error(e);
+        messages.textContent='Erro ao ler JSON: '+e.message;
+      }
+    });
+
+    // Recebe schema enviado pelo eMobi (pai)
+    window.addEventListener('message', (event) => {
+      try{
+        const data = event.data || {};
+        if(data.type === 'CHECKLIST_SCHEMA'){
+          const schema = data.schema || (data.schemaText ? JSON.parse(data.schemaText) : null);
+          if(!schema || !schema.sections){
+            messages.textContent = 'Formato inválido recebido do eMobi.';
+            return;
+          }
+          // mantém texto original para permitir recarregar por unidade
+          originalSchemaText = JSON.stringify(schema);
+          renderForm(schema, { resetState:true });
+          messages.textContent = 'Formulário carregado.';
+        }
+      }catch(err){
+        console.error(err);
+        messages.textContent = 'Erro ao processar schema recebido: ' + err.message;
+      }
+    });
+
+</script>
+<script>
+
+function isGoogleDriveUrl(url){
+    try{
+        const u = new URL((url||'').trim());
+        return (u.hostname.includes('drive.google.com') || u.hostname.includes('drive.usercontent.google.com')) ||
+               ((u.hostname.includes('googleusercontent.com') || u.hostname.includes('lh3.googleusercontent.com')) && u.searchParams.has('id'));
+    }catch(e){
+        // fallback for non-standard strings
+        return /drive\.google\.com|drive\.usercontent\.google\.com|thumbnail\?id=/.test(String(url||''));
+    }
+}
+
+function isGlbUrl(url){
+    const s = (url||'').toString().trim().toLowerCase();
+    return s.includes('.glb') || s.includes('.gltf');
+}
+
+function normalizeAssetUrl(url){
+    const raw = (url||'').toString().trim();
+    if(!raw) return '';
+    // Keep non-Drive URLs as-is (e.g. GitHub .glb)
+    if(isGoogleDriveUrl(raw)) return convertGoogleDriveUrl(raw);
+    return raw;
+}
+
+function convertGoogleDriveUrl(url) {
+    // Caso já esteja no formato thumbnail?id=...&sz=w800
+    const directMatch = url.match(/thumbnail\?id=([a-zA-Z0-9_-]+)(&sz=\w+)?/);
+    if (directMatch && directMatch[1]) {
+        return `https://drive.google.com/thumbnail?id=${directMatch[1]}&sz=w800`;
+    }
+
+    // Caso esteja no formato file/d/ID/view
+    const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)\//);
+    if (fileMatch && fileMatch[1]) {
+        return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w800`;
+    }
+
+    alert("O link inserido não parece ser um link válido do Google Drive. Verifique e tente novamente.");
+    return "";
+}
+
+/* toggleEditMode() - defined once below */
+
+function toggleEditMode() {
+    if (!isFullEditMode) {
+        document.getElementById('editPasswordInput').value = "";
+        document.getElementById('editModeModalOverlay').style.display = 'block';
+    } else {
+        document.getElementById("textEditBtn").style.display = "none";
+        document.getElementById("saveJsonBtn").style.display = "none";
+        document.getElementById("addNodeBtn").style.display = "none";
+        document.getElementById("removeNodeBtn").style.display = "none";
+        document.getElementById("imageEditBtn").style.display = "none";
+        document.getElementById("editDocButton").style.display = "none";
+
+        isFullEditMode = false;
+    }
+}
+
+function confirmEditPassword() {
+    const senha = document.getElementById("editPasswordInput").value;
+    if (senha !== "001") {
+        alert("Senha incorreta. Acesso negado.");
+        closeEditPasswordModal();
+        return;
+    }
+
+    document.getElementById("textEditBtn").style.display = "inline-block";
+    document.getElementById("saveJsonBtn").style.display = "inline-block";
+    document.getElementById("addNodeBtn").style.display = "inline-block";
+    document.getElementById("removeNodeBtn").style.display = "inline-block";
+    document.getElementById("imageEditBtn").style.display = "inline-block";
+    document.getElementById("editDocButton").style.display = "inline-block";
+
+    isFullEditMode = true;
+    closeEditPasswordModal();
+}
+
+function closeEditPasswordModal() {
+    document.getElementById('editModeModalOverlay').style.display = 'none';
+}
+
+document.addEventListener('keydown', function(event) {
+    const modal = document.getElementById('editModeModalOverlay');
+    if (modal && modal.style.display === 'block') {
+        if (event.key === 'Enter') {
+            confirmEditPassword();
+        } else if (event.key === 'Escape') {
+            closeEditPasswordModal();
+        }
+    }
+});
+
+/* ---------------- CHECKLIST DIGITAL (aba) ---------------- */
+let __checklistLastSchemaText = "";
+let __checklistFrameReady = false;
+
+function initChecklistDigitalTab(){
+  const inp = document.getElementById('checklistJsonInput');
+  const btn = document.getElementById('checklistLoadBtn');
+  const frame = document.getElementById('checklistDigitalFrame');
+  const status = document.getElementById('checklistLoadStatus');
+  const tpl = document.getElementById('checklistAppTemplate');
+
+  if(!btn || !frame || !tpl) return;
+
+  // 1) Garante que o iframe tenha o app do checklist carregado (srcdoc)
+  if(!frame.srcdoc || frame.srcdoc.trim().length < 10){
+    frame.srcdoc = tpl.innerHTML;
+    __checklistFrameReady = false;
+  }
+
+  // Marca ready quando o iframe terminar de carregar
+  if(!frame.dataset.boundLoad){
+    frame.dataset.boundLoad = "1";
+    frame.addEventListener('load', ()=>{
+      __checklistFrameReady = true;
+
+      // Se já havia schema carregado nesta sessão, reenvia ao alternar abas
+      if(__checklistLastSchemaText){
+        try{
+          frame.contentWindow?.postMessage({ type:'CHECKLIST_SCHEMA', schemaText: __checklistLastSchemaText }, '*');
+          if(status) status.textContent = 'JSON reenviado ao checklist (memória desta sessão).';
+        }catch(e){}
+      }
+    });
+  }
+
+  if(btn.dataset.bound === "1") return; // prevent double-binding
+  btn.dataset.bound = "1";
+
+  btn.addEventListener('click', async ()=>{
+    try{
+      const file = inp && inp.files && inp.files[0];
+      if(!file){
+        if(status) status.textContent = 'Selecione um arquivo .json primeiro.';
+        return;
+      }
+
+      const text = await file.text();
+      // valida JSON
+      const schema = JSON.parse(text);
+      if(!schema || !schema.sections){
+        if(status) status.textContent = 'JSON inválido: esperado objeto com campo "sections".';
+        return;
+      }
+
+      __checklistLastSchemaText = text;
+
+      // garante app carregado
+      if(!frame.srcdoc || frame.srcdoc.trim().length < 10){
+        frame.srcdoc = tpl.innerHTML;
+        __checklistFrameReady = false;
+      }
+
+      // se ainda não carregou, tenta enviar com pequeno retry
+      const send = ()=>{
+        try{
+          frame.contentWindow?.postMessage({ type:'CHECKLIST_SCHEMA', schemaText: text }, '*');
+          if(status) status.textContent = 'Checklist carregado a partir do JSON.';
+        }catch(e){
+          if(status) status.textContent = 'Não foi possível enviar o JSON ao checklist.';
+        }
+      };
+
+      if(__checklistFrameReady){
+        send();
+      }else{
+        if(status) status.textContent = 'Carregando app do checklist...';
+        // tenta por alguns ciclos enquanto o iframe termina de carregar
+        let tries = 0;
+        const t = setInterval(()=>{
+          tries++;
+          if(__checklistFrameReady || tries > 30){
+            clearInterval(t);
+            send();
+          }
+        }, 120);
+      }
+    }catch(err){
+      console.error(err);
+      if(status) status.textContent = 'Erro ao ler JSON: ' + err.message;
+    }
+  });
+}
+
+/* --------------------------------------------------------- */
+</script>
+</body>
+</html>
+
+  </template>
+
+  <div style="padding: 0 10px 10px 10px;">
+    <iframe id="checklistDigitalFrame" title="Checklist Digital"
+            style="width:100%; height:calc(100vh - 260px); min-height:760px; border:1px solid #e5e7eb; border-radius:12px; background:#fff;"></iframe>
+  </div>
+</div>
+
+<!-- ═══════════ TOOLS TAB ═══════════ -->
+<div class="tabContent" id="tools">
+  <div class="tab-import-bar">
+    <button class="toggle-import-bar" type="button" aria-label="Hide section" title="Hide">▲</button>
+    <div class="tab-import-row">
+      <div class="tab-import-title" id="tools-bar-title">⚙ Excel → JSON Converters</div>
+    </div>
+  </div>
+
+  <p class="tools-section-header" id="tools-section-header">
+    Convert Excel spreadsheets directly in the browser — no Python or Colab required.
+  </p>
+
+  <div class="tools-grid">
+
+    <!-- ── Card 1: Hierarchy BOM Builder ── -->
+    <div class="tool-card">
+      <div class="tool-card-icon">🏗️</div>
+      <h3 class="tool-card-title" id="tool-title-hierarchy">Hierarchy BOM Builder</h3>
+      <p class="tool-card-desc" id="tool-desc-hierarchy">
+        Converts an Excel file with Level 1–10 columns into the Hierarchy JSON used by the <strong>HIERARCHY ASSEMBLY</strong> tab.
+      </p>
+      <div class="tool-card-cols">
+        <strong id="required-cols-label">Required columns:</strong>
+        Level 1 … Level 10, ID. Figura, Description, Fabricante/Fornecedor,
+        Referência comercial, Código SAP, Qtd, Documentação, Image URL1, Image URL2, Image URL3
+      </div>
+      <div class="tool-card-upload">
+        <input type="file" id="hierarchyExcelInput" accept=".xlsx,.xls" />
+        <button class="tool-convert-btn" onclick="runHierarchyConverter()" id="btn-convert-hierarchy">
+          ⬇ Convert &amp; Download JSON
+        </button>
+      </div>
+      <div class="tool-status" id="hierarchyConverterStatus"></div>
+    </div>
+
+    <!-- ── Card 2: Material Catalog Builder ── -->
+    <div class="tool-card">
+      <div class="tool-card-icon">📦</div>
+      <h3 class="tool-card-title" id="tool-title-material">Material Catalog Builder</h3>
+      <p class="tool-card-desc" id="tool-desc-material">
+        Converts an Excel file with material catalog columns into the JSON used by the <strong>MATERIAL SEARCH</strong> tab.
+      </p>
+      <div class="tool-card-cols">
+        <strong id="required-cols-label-mat">Required columns:</strong>
+        Centro, Material, Texto breve de material, Texto Longo, Depósito, Utilização livre
+      </div>
+      <div class="tool-card-upload">
+        <input type="file" id="materialExcelInput" accept=".xlsx,.xls" />
+        <button class="tool-convert-btn" onclick="runMaterialConverter()" id="btn-convert-material">
+          ⬇ Convert &amp; Download JSON
+        </button>
+      </div>
+      <div class="tool-status" id="materialConverterStatus"></div>
+    </div>
+
+    <!-- ── Card 3: Checklist Builder ── -->
+    <div class="tool-card">
+      <div class="tool-card-icon">✅</div>
+      <h3 class="tool-card-title" id="tool-title-checklist">Checklist Builder</h3>
+      <p class="tool-card-desc" id="tool-desc-checklist">
+        Converts an Excel file with task items and CARRO columns into the JSON used by the <strong>CHECKLIST DIGITAL</strong> tab.
+      </p>
+      <div class="tool-card-cols">
+        <strong id="required-cols-label-chk">Required columns:</strong>
+        Item, Local, Sistema, Subsistema, TIPO ATIVIDADE, DESCRIÇÃO CURTA, DESCRIÇÃO LONGA,
+        REFERÊNCIA, HYPERLINK REFERÊNCIA, ACESSO, FERRAMENTA, MATERIAL, CARRO 1, CARRO 2 …
+      </div>
+      <div class="tool-card-upload">
+        <input type="file" id="checklistExcelInput" accept=".xlsx,.xls" />
+        <button class="tool-convert-btn" onclick="runChecklistConverter()" id="btn-convert-checklist">
+          ⬇ Convert &amp; Download JSON
+        </button>
+      </div>
+      <div class="tool-status" id="checklistConverterStatus"></div>
+    </div>
+
+  </div><!-- /.tools-grid -->
+</div><!-- /#tools -->
+
+<div class="info-popup-overlay">
+</div>
+<div class="info-popup">
+<div class="close-button">
+    X
+   </div>
+<p>
+<strong>
+     Como usar:
+    </strong>
+</p>
+<p>
+    Clicar na seta à esquerda. Acesse o
+    <a href="https://grupoccr.sharepoint.com/:f:/r/sites/ENGEMOB-TRANSPORTES/Documentos%20Compartilhados/General/_eTrilhos?csf=1&web=1&e=GLgYfi">
+     link
+    </a>
+    para acessar os arquivos referentes a cada Unidade e Sistema (Clicar em "Adicionar Atalho ao Onedrive").
+   </p>
+<p>
+    Pasta SISTEMA&amp;EQUIPAMENTO: Carrega na Plataforma a hierarquia de montagem do Sistema ou Equipamento.
+   </p>
+<p>
+    Pasta BASE CADASTRO: Carrega a informação de cadastro técnico e estoque dos Materiais (Fonte SAP PM).
+   </p>
+</div>
+
+<div id="docManagerModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+<div style="background:white; padding:20px; border-radius:8px; max-width:500px; width:90%; position:relative;">
+<h3>Gerenciar Documentação</h3>
+<div>
+<label>Link 1:
+        <input id="docLink1" style="width:100%" type="text"/>
+</label>
+<br/><br/>
+<label>Link 2:
+        <input id="docLink2" style="width:100%" type="text"/>
+</label>
+<br/><br/>
+<label>Link 3:
+        <input id="docLink3" style="width:100%" type="text"/>
+</label>
+</div>
+<div style="text-align:right; margin-top:10px;">
+<button onclick="closeDocManagerModal()">Cancelar</button>
+<button onclick="saveDocLinks()">Salvar</button>
+</div>
+</div>
+</div>
+
+<!-- FUNCIONALIDADE 1: Exibir SEM FIGURA -->
+
+<!-- FUNCIONALIDADE 2: Edição da coluna ID na tablecontainer -->
+
+<!-- Modal para exibir imagem do material -->
+<div id="materialImageModal" style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center;"><button id="modalCloseBtn" aria-label="Fechar"  onclick="closeMaterialImageModal()" style="position:absolute; top:18px; right:24px; width:40px; height:40px; border:none; border-radius:20px; background:rgba(0,0,0,0.55); color:#fff; font-size:22px; line-height:40px; cursor:pointer; z-index:1001;" type="button">×</button>
+<span </span>
+<div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; padding:16px; box-sizing:border-box;">
+  <div class="mmodal-box" style="width:960px; height:560px; background:#ffffff; border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,.35); padding:12px; display:flex; align-items:stretch; justify-content:center;">
+    <table class="material-modal-table" style="width:100%; height:100%; border-collapse:separate; border-spacing:12px; table-layout:fixed;">
+      <tr>
+        <td class="left-cell" rowspan="3" style="vertical-align:middle; width:48%;">
+          <div style="width:100%; height:520px; display:flex; align-items:center; justify-content:center; border:1px solid #eee; border-radius:8px; overflow:hidden; background:#fafafa;">
+            <img id="materialImageContent" alt="Imagem do Material" src="" style="width:100%; height:100%; object-fit:contain;" />
+          </div>
+        </td>
+        <td class="right-cell" style="vertical-align:top;">
+          <div class="field">
+            <div class="label" style="font-weight:600; margin-bottom:6px;">Material</div>
+            <div id="modalMaterialId" class="value" style="white-space:pre-wrap; overflow-y: auto; overflow-x: hidden; max-height:150px;"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="right-cell" style="vertical-align:top;">
+          <div class="field">
+            <div class="label" style="font-weight:600; margin-bottom:6px;">Texto breve de material</div>
+            <div id="modalShortText" class="value" style="white-space:pre-wrap; overflow-y: auto; overflow-x: hidden; max-height:150px;"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="right-cell" style="vertical-align:top;">
+          <div class="field">
+            <div class="label" style="font-weight:600; margin-bottom:6px;">Texto Longo</div>
+            <div id="modalLongText" class="value" style="white-space:pre-wrap; overflow-y: auto; overflow-x: hidden; max-height:300px;"></div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div></div>
+        </td>
+        <td class="right-cell" style="vertical-align:top;">
+          <div class="field">
+            <div class="label" style="font-weight:600; margin-bottom:6px;"></div>
+            <div id="modalMaterialId" class="value" style="white-space:pre-wrap; overflow-y: auto; overflow-x: hidden;"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="right-cell" style="vertical-align:top;">
+          <div class="field">
+            <div class="label" style="font-weight:600; margin-bottom:6px;"></div>
+            <div id="modalShortText" class="value" style="white-space:pre-wrap; overflow-y: auto; overflow-x: hidden;"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="right-cell" style="vertical-align:top;">
+          <div class="field">
+            <div class="label" style="font-weight:600; margin-bottom:6px;"></div>
+            <div id="modalLongText" class="value" style="white-space:pre-wrap; overflow-y: auto; overflow-x: hidden;"></div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div></div>
+        </td>
+        <td class="right-cell" style="vertical-align:top;">
+          <div class="field">
+            <div class="label" style="font-weight:600; margin-bottom:6px;"></div>
+            <div id="modalSapCode" class="value" style="white-space:pre-wrap; overflow-y: auto; overflow-x: hidden;"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="right-cell" style="vertical-align:top;">
+          <div class="field">
+            <div class="label" style="font-weight:600; margin-bottom:6px;"></div>
+            <div id="modalShortText" class="value" style="white-space:pre-wrap; overflow-y: auto; overflow-x: hidden;"></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="right-cell" style="vertical-align:top;">
+          <div class="field">
+            <div class="label" style="font-weight:600; margin-bottom:6px;"></div>
+            <div id="modalLongText" class="value" style="white-space:pre-wrap; overflow-y: auto; overflow-x: hidden;"></div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div></div>
+      </td>
+      <td class="right-cell" style="vertical-align:top;">
+        <div class="field">
+          <div class="label" style="font-weight:600; margin-bottom:6px;">Código SAP</div>
+          <div id="modalSapCode" class="value" style="white-space:pre-wrap;"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td class="right-cell" style="vertical-align:top;">
+        <div class="field">
+          <div class="label" style="font-weight:600; margin-bottom:6px;">Texto breve de material</div>
+          <div id="modalShortText" class="value" style="white-space:pre-wrap;"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td class="right-cell" style="vertical-align:top;">
+        <div class="field">
+          <div class="label" style="font-weight:600; margin-bottom:6px;">Texto Longo</div>
+          <div id="modalLongText" class="value" style="white-space:pre-wrap;"></div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div></div>
+  <div class="modal-info" style="flex:1 1 58%; max-width:720px; background:#ffffff; color:#111; border-radius:12px; padding:16px; overflow:auto; max-height:78vh; box-shadow:0 4px 16px rgba(0,0,0,.25)">
+    <div style="font-weight:600; margin-bottom:8px;">Texto breve de material</div>
+    <div id="modalShortText" style="white-space:pre-wrap; margin-bottom:12px;"></div>
+    <div style="font-weight:600; margin-bottom:8px;">Texto Longo</div>
+    <div id="modalLongText" style="white-space:pre-wrap;"></div>
+  </div>
+</div></div>
+</div>
+
+<div id="editModeModalOverlay">
+  <div id="editModeModal">
+    <h3>Digite a senha para Modo Edição</h3>
+    <input type="password" id="editPasswordInput" placeholder="Senha"/>
+    <br/>
+    <button onclick="confirmEditPassword()">Confirmar</button>
+    <button onclick="closeEditPasswordModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- modal-close-patch-esc-2025-08-27 -->
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     eBOM Catalog  –  Core Extensions  v2.0
+     © 2025 eBOM Catalog. All rights reserved.
+     Unauthorised copying, redistribution or commercial use is prohibited.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+</body>
+</html>

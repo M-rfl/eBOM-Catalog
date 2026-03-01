@@ -1615,7 +1615,13 @@
     });
 
 </script>
+</body>
+</html>
+
+  </template>
+
 <script>
+/* ── Main-page utilities (must be outside <template>) ── */
 
 function isGoogleDriveUrl(url){
     try{
@@ -1623,7 +1629,6 @@ function isGoogleDriveUrl(url){
         return (u.hostname.includes('drive.google.com') || u.hostname.includes('drive.usercontent.google.com')) ||
                ((u.hostname.includes('googleusercontent.com') || u.hostname.includes('lh3.googleusercontent.com')) && u.searchParams.has('id'));
     }catch(e){
-        // fallback for non-standard strings
         return /drive\.google\.com|drive\.usercontent\.google\.com|thumbnail\?id=/.test(String(url||''));
     }
 }
@@ -1636,29 +1641,22 @@ function isGlbUrl(url){
 function normalizeAssetUrl(url){
     const raw = (url||'').toString().trim();
     if(!raw) return '';
-    // Keep non-Drive URLs as-is (e.g. GitHub .glb)
     if(isGoogleDriveUrl(raw)) return convertGoogleDriveUrl(raw);
     return raw;
 }
 
 function convertGoogleDriveUrl(url) {
-    // Caso já esteja no formato thumbnail?id=...&sz=w800
     const directMatch = url.match(/thumbnail\?id=([a-zA-Z0-9_-]+)(&sz=\w+)?/);
     if (directMatch && directMatch[1]) {
         return `https://drive.google.com/thumbnail?id=${directMatch[1]}&sz=w800`;
     }
-
-    // Caso esteja no formato file/d/ID/view
     const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)\//);
     if (fileMatch && fileMatch[1]) {
         return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w800`;
     }
-
     alert("O link inserido não parece ser um link válido do Google Drive. Verifique e tente novamente.");
     return "";
 }
-
-/* toggleEditMode() - defined once below */
 
 function toggleEditMode() {
     if (!isFullEditMode) {
@@ -1671,7 +1669,6 @@ function toggleEditMode() {
         document.getElementById("removeNodeBtn").style.display = "none";
         document.getElementById("imageEditBtn").style.display = "none";
         document.getElementById("editDocButton").style.display = "none";
-
         isFullEditMode = false;
     }
 }
@@ -1683,14 +1680,12 @@ function confirmEditPassword() {
         closeEditPasswordModal();
         return;
     }
-
     document.getElementById("textEditBtn").style.display = "inline-block";
     document.getElementById("saveJsonBtn").style.display = "inline-block";
     document.getElementById("addNodeBtn").style.display = "inline-block";
     document.getElementById("removeNodeBtn").style.display = "inline-block";
     document.getElementById("imageEditBtn").style.display = "inline-block";
     document.getElementById("editDocButton").style.display = "inline-block";
-
     isFullEditMode = true;
     closeEditPasswordModal();
 }
@@ -1723,19 +1718,15 @@ function initChecklistDigitalTab(){
 
   if(!btn || !frame || !tpl) return;
 
-  // 1) Garante que o iframe tenha o app do checklist carregado (srcdoc)
   if(!frame.srcdoc || frame.srcdoc.trim().length < 10){
     frame.srcdoc = tpl.innerHTML;
     __checklistFrameReady = false;
   }
 
-  // Marca ready quando o iframe terminar de carregar
   if(!frame.dataset.boundLoad){
     frame.dataset.boundLoad = "1";
     frame.addEventListener('load', ()=>{
       __checklistFrameReady = true;
-
-      // Se já havia schema carregado nesta sessão, reenvia ao alternar abas
       if(__checklistLastSchemaText){
         try{
           frame.contentWindow?.postMessage({ type:'CHECKLIST_SCHEMA', schemaText: __checklistLastSchemaText }, '*');
@@ -1745,7 +1736,7 @@ function initChecklistDigitalTab(){
     });
   }
 
-  if(btn.dataset.bound === "1") return; // prevent double-binding
+  if(btn.dataset.bound === "1") return;
   btn.dataset.bound = "1";
 
   btn.addEventListener('click', async ()=>{
@@ -1755,24 +1746,19 @@ function initChecklistDigitalTab(){
         if(status) status.textContent = 'Selecione um arquivo .json primeiro.';
         return;
       }
-
       const text = await file.text();
-      // valida JSON
       const schema = JSON.parse(text);
       if(!schema || !schema.sections){
         if(status) status.textContent = 'JSON inválido: esperado objeto com campo "sections".';
         return;
       }
-
       __checklistLastSchemaText = text;
 
-      // garante app carregado
       if(!frame.srcdoc || frame.srcdoc.trim().length < 10){
         frame.srcdoc = tpl.innerHTML;
         __checklistFrameReady = false;
       }
 
-      // se ainda não carregou, tenta enviar com pequeno retry
       const send = ()=>{
         try{
           frame.contentWindow?.postMessage({ type:'CHECKLIST_SCHEMA', schemaText: text }, '*');
@@ -1786,7 +1772,6 @@ function initChecklistDigitalTab(){
         send();
       }else{
         if(status) status.textContent = 'Carregando app do checklist...';
-        // tenta por alguns ciclos enquanto o iframe termina de carregar
         let tries = 0;
         const t = setInterval(()=>{
           tries++;
@@ -1802,13 +1787,7 @@ function initChecklistDigitalTab(){
     }
   });
 }
-
-/* --------------------------------------------------------- */
 </script>
-</body>
-</html>
-
-  </template>
 
   <div style="padding: 0 10px 10px 10px;">
     <iframe id="checklistDigitalFrame" title="Checklist Digital"

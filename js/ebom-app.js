@@ -10,7 +10,7 @@
 /* ── DOMContentLoaded helper -- works whether DOM is already ready or not ── */
 function runWhenReady(fn) {
   if (document.readyState === 'loading') {
-    runWhenReady( fn);
+    document.addEventListener('DOMContentLoaded', fn);
   } else {
     fn();
   }

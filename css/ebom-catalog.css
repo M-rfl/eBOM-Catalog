@@ -853,9 +853,24 @@ button:disabled { opacity: .5 !important; cursor: not-allowed !important; }
 
 /* ── Result table improvements ───────────────────────────────────── */
 #resultTable thead tr { background: var(--clr-primary) !important; }
-#resultTable thead th { color: #fff !important; font-weight: 600 !important; padding: 10px 8px !important; }
+#resultTable thead th { color: #fff !important; font-weight: 600 !important; padding: 10px 8px !important; position: sticky; top: 0; z-index: 2; }
 #resultTable tbody tr:hover { background-color: var(--clr-primary-lighter) !important; }
-#resultTable { border-radius: var(--radius) !important; overflow: hidden !important; }
+#resultTable { border-radius: var(--radius) !important; }
+
+/* ── Material search table container — scroll within viewport ───── */
+#pesquisaMaterial { display: none; flex-direction: column; }
+#pesquisaMaterial.active { display: flex !important; }
+#pesquisaMaterial .tab-import-bar,
+#pesquisaMaterial .fields-container,
+#pesquisaMaterial #resultCount { flex-shrink: 0; }
+#pesquisaMaterial .table-container {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+}
 
 /* ── Doc button active (has doc) ─────────────────────────────────── */
 .doc-btn-active { background-color: var(--clr-primary) !important; }

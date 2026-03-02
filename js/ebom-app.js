@@ -1343,8 +1343,12 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
         const modal = document.getElementById('materialImageModal');
-        if (modal && modal.style.display === 'block') {
-            modal.style.display = 'none';
+        if (modal && modal.style.display && modal.style.display !== 'none') {
+            if (typeof closeMaterialImageModal === 'function') {
+                closeMaterialImageModal();
+            } else {
+                modal.style.display = 'none';
+            }
         }
     }
 });
@@ -1739,6 +1743,14 @@ document.addEventListener('keydown', function (event) {
     if(lEl)  lEl.textContent  = '';
   };
 
+  // Click on backdrop (outside modal content) closes the modal
+  var matModal = document.getElementById('materialImageModal');
+  if(matModal){
+    matModal.addEventListener('click', function(e){
+      if(e.target === matModal) closeMaterialImageModal();
+    });
+  }
+
   // Enter on fields inside PESQUISA MATERIAL triggers filterData()
   function bindEnterToFilter(){
     var input = document.getElementById('searchInput');
@@ -1789,14 +1801,18 @@ document.addEventListener('keydown', function (event) {
   }
 
   btn.addEventListener('click', ()=>{
-    if (!document.fullscreenElement) {
-      container.requestFullscreen().then(()=>resizeModelViewer());
-    } else {
-      document.exitFullscreen().then(()=>resizeModelViewer());
+    container.classList.toggle('viewer-fullscreen');
+    resizeModelViewer();
+  });
+
+  // ESC to exit fullscreen viewer
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && container.classList.contains('viewer-fullscreen')){
+      container.classList.remove('viewer-fullscreen');
+      resizeModelViewer();
     }
   });
 
-  document.addEventListener('fullscreenchange', resizeModelViewer);
   window.addEventListener('resize', ()=>setTimeout(resizeModelViewer, 80));
 })();
 

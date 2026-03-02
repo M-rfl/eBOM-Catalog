@@ -1,0 +1,26 @@
+{
+  "name": "ebom-catalog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test tests/smoke.spec.js",
+    "test:headed": "npx playwright test tests/smoke.spec.js --headed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/M-rfl/eBOM-Catalog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/M-rfl/eBOM-Catalog/issues"
+  },
+  "homepage": "https://github.com/M-rfl/eBOM-Catalog#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "serve": "^14.2.5"
+  }
+}

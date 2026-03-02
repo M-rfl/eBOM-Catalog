@@ -11,6 +11,14 @@ Thumbs.db
 *~
 .vscode/
 
+# Node
+node_modules/
+package-lock.json
+
+# Playwright
+test-results/
+playwright-report/
+
 # Temporary files
 *.tmp
 *.bak

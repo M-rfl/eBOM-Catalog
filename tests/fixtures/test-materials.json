@@ -1,0 +1,42 @@
+[
+  {
+    "Centro": "1000",
+    "Depósito": "0001",
+    "Material": "MAT-10001",
+    "Texto breve de material": "Parafuso M10x50 Aço Inox",
+    "Nº do material do fabricante": "BLT-M10-50-SS",
+    "Nome do fabricante": "Fabory"
+  },
+  {
+    "Centro": "1000",
+    "Depósito": "0001",
+    "Material": "MAT-10002",
+    "Texto breve de material": "Rolamento 6205-2RS",
+    "Nº do material do fabricante": "6205-2RS-C3",
+    "Nome do fabricante": "SKF"
+  },
+  {
+    "Centro": "1000",
+    "Depósito": "0002",
+    "Material": "MAT-10003",
+    "Texto breve de material": "Filtro de Óleo Hidráulico",
+    "Nº do material do fabricante": "HF-6588",
+    "Nome do fabricante": "Fleetguard"
+  },
+  {
+    "Centro": "2000",
+    "Depósito": "0001",
+    "Material": "MAT-20001",
+    "Texto breve de material": "Válvula Solenoide 24V",
+    "Nº do material do fabricante": "VS-24-DN10",
+    "Nome do fabricante": "Bosch Rexroth"
+  },
+  {
+    "Centro": "2000",
+    "Depósito": "0003",
+    "Material": "MAT-20002",
+    "Texto breve de material": "Correia Dentada HTD 8M",
+    "Nº do material do fabricante": "HTD-8M-1200",
+    "Nome do fabricante": "Gates"
+  }
+]

@@ -1,0 +1,49 @@
+[
+  {
+    "originalname": "SISTEMA HIDRÁULICO",
+    "description": "Hydraulic system assembly",
+    "codigoSap": "SAP-001",
+    "idFigura": "FIG-001",
+    "documentation": "",
+    "imageUrl1": "",
+    "imageUrl2": "",
+    "imageUrl3": "",
+    "fabricanteFornecedor": "Bosch Rexroth",
+    "referenciaComercial": "HR-2024-001",
+    "qtd": "1",
+    "cadastro": "SIM",
+    "children": [
+      {
+        "originalname": "Bomba Hidráulica",
+        "description": "Main hydraulic pump",
+        "codigoSap": "SAP-002",
+        "idFigura": "FIG-002",
+        "documentation": "",
+        "imageUrl1": "",
+        "imageUrl2": "",
+        "imageUrl3": "",
+        "fabricanteFornecedor": "Parker",
+        "referenciaComercial": "PK-HP-100",
+        "qtd": "2",
+        "cadastro": "SIM",
+        "children": [
+          {
+            "originalname": "Selo Mecânico",
+            "description": "Mechanical seal for pump shaft",
+            "codigoSap": "SAP-003",
+            "idFigura": "FIG-003",
+            "documentation": "",
+            "imageUrl1": "",
+            "imageUrl2": "",
+            "imageUrl3": "",
+            "fabricanteFornecedor": "John Crane",
+            "referenciaComercial": "JC-SEAL-50",
+            "qtd": "4",
+            "cadastro": "NÃO",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+]

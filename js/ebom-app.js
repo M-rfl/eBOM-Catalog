@@ -858,18 +858,32 @@ function updateImage() {
 	}
   
 /* --- <script> (body outside template) --- */
-document.querySelector('.info-button').addEventListener('click', function() {
-        document.querySelector('.info-popup').style.display = 'block';
-        document.querySelector('.info-popup-overlay').style.display = 'block';
-    });
-    document.querySelector('.info-popup .close-button').addEventListener('click', function() {
-        document.querySelector('.info-popup').style.display = 'none';
-        document.querySelector('.info-popup-overlay').style.display = 'none';
-    });
-    document.querySelector('.info-popup-overlay').addEventListener('click', function() {
-        document.querySelector('.info-popup').style.display = 'none';
-        document.querySelector('.info-popup-overlay').style.display = 'none';
-    });
+/* Info-popup button & overlay handlers (null-safe) */
+(function(){
+    var infoBtn = document.querySelector('.info-button');
+    var popup   = document.querySelector('.info-popup');
+    var overlay = document.querySelector('.info-popup-overlay');
+    var closeBtn = popup ? popup.querySelector('.close-button') : null;
+
+    if(infoBtn && popup && overlay){
+        infoBtn.addEventListener('click', function(){
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+        });
+    }
+    if(closeBtn && popup && overlay){
+        closeBtn.addEventListener('click', function(){
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+    }
+    if(overlay && popup){
+        overlay.addEventListener('click', function(){
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+    }
+})();
   
 /* --- <script> (body outside template) --- */
 function handleEditDocClick() {

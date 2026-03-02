@@ -858,7 +858,7 @@ button:disabled { opacity: .5 !important; cursor: not-allowed !important; }
 #resultTable { border-radius: var(--radius) !important; }
 
 /* ── Material search table container — scroll within viewport ───── */
-#pesquisaMaterial { display: none; flex-direction: column; }
+#pesquisaMaterial { display: none; flex-direction: column; overflow: hidden; }
 #pesquisaMaterial.active { display: flex !important; }
 #pesquisaMaterial .tab-import-bar,
 #pesquisaMaterial .fields-container,

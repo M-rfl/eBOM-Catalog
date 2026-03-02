@@ -81,17 +81,13 @@ const imageMap = {
     	    // Clear and render the table
 	    tableContainer.innerHTML = ""; // Clear previous content
     	    const table = document.createElement("table");
-    	    table.style.width = "100%";
-    	    table.style.borderCollapse = "collapse";
+    	    table.className = "data-table";
 
     	    // Create table headers
     	    const thead = document.createElement("thead");
     	    const headerRow = document.createElement("tr");
     	    Object.keys(rows[0]).forEach(key => {
         	const th = document.createElement("th");
-        	th.style.border = "1px solid #ddd";
-        	th.style.padding = "8px";
-        	th.style.backgroundColor = "#f4f4f4";
         	th.textContent = key;
         	headerRow.appendChild(th);
     	    });
@@ -104,8 +100,6 @@ const imageMap = {
         	const tr = document.createElement("tr");
         	Object.entries(row).forEach(([key, value]) => {
             	    const td = document.createElement("td");
-            	    td.style.border = "1px solid #ddd";
-            	    td.style.padding = "8px";
 		    if (key === "Doc") {
 			td.innerHTML = value; // Render as HTML for buttons
 		    } else {

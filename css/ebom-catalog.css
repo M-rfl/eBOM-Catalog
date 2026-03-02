@@ -387,12 +387,7 @@
         input[type="file"] {
             padding: 5px;
         }
-        button {
-            background-color: #FF7C3C;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
+        /* Legacy global button rule removed — use .btn classes */
 
 	.highlight {
     	    background-color: yellow;
@@ -699,46 +694,98 @@
 
 /* ═══ Extracted from <style id="ebom-theme-v2"> (head) ═══ */
 
-/* ── CSS Custom Properties ───────────────────────────────────────── */
+/* ── Design System Tokens ────────────────────────────────────────── */
 :root {
-  --clr-primary:        #2563eb;
-  --clr-primary-hover:  #1d4ed8;
-  --clr-primary-active: #1e40af;
-  --clr-primary-light:  #dbeafe;
-  --clr-primary-lighter:#eff6ff;
-  --clr-header-bg:      #0f172a;
-  --clr-nav-bg:         #1e293b;
-  --clr-nav-btn:        #334155;
-  --clr-nav-btn-hover:  #475569;
+  /* Core Industrial Palette */
+  --color-navy:         #001D55;
+  --color-deep-teal:    #024873;
+  --color-medium-teal:  #03738C;
+  --color-bright-teal:  #21BFAF;
+
+  /* Semantic Colors */
+  --clr-primary:        var(--color-deep-teal);
+  --clr-primary-hover:  #013d5f;
+  --clr-primary-active: #012d42;
+  --clr-primary-light:  #e0f4f4;
+  --clr-primary-lighter:#f0fafa;
+  --clr-secondary:      var(--color-medium-teal);
+  --clr-secondary-hover:#026274;
+  --clr-accent:         var(--color-bright-teal);
+  --clr-accent-hover:   #1aa99a;
+  --clr-accent-light:   #d4f5f1;
+  --clr-header-bg:      var(--color-navy);
+  --clr-nav-bg:         #001847;
+  --clr-nav-btn:        var(--color-deep-teal);
+  --clr-nav-btn-hover:  var(--color-medium-teal);
+
+  /* Neutrals */
   --clr-text:           #111827;
+  --clr-text-secondary: #374151;
   --clr-muted:          #6b7280;
-  --clr-border:         #e5e7eb;
+  --clr-border:         #d1d5db;
+  --clr-border-light:   #e5e7eb;
   --clr-surface:        #f8fafc;
+  --clr-surface-raised: #ffffff;
+
+  /* Feedback */
   --clr-success:        #16a34a;
   --clr-danger:         #dc2626;
-  --radius-sm:          4px;
-  --radius:             8px;
-  --radius-lg:          12px;
-  --shadow-sm:          0 1px 3px rgba(0,0,0,.08);
-  --shadow:             0 4px 16px rgba(0,0,0,.10);
-  --shadow-lg:          0 8px 32px rgba(0,0,0,.14);
-  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --clr-warning:        #d97706;
+
+  /* Typography */
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fs-xs:   0.6875rem;
+  --fs-sm:   0.75rem;
+  --fs-base: 0.875rem;
+  --fs-md:   1rem;
+  --fs-lg:   1.125rem;
+  --fs-xl:   1.5rem;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* Spacing (4px base) */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius:    8px;
+  --radius-lg: 12px;
+
+  /* Shadows (navy-tinted) */
+  --shadow-sm:  0 1px 3px rgba(0,29,85,.08);
+  --shadow:     0 4px 16px rgba(0,29,85,.10);
+  --shadow-lg:  0 8px 32px rgba(0,29,85,.14);
+  --shadow-xl:  0 20px 60px rgba(0,29,85,.18);
+
+  /* Z-Index Layers */
+  --z-sticky: 10;
+  --z-nav: 200;
+  --z-modal-bg: 900;
+  --z-modal: 1000;
+  --z-toast: 9999;
+  --z-fullscreen: 99999;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
 }
 
 /* ── Typography ──────────────────────────────────────────────────── */
 body { font-family: var(--font); color: var(--clr-text); }
 
-/* ── Header override ─────────────────────────────────────────────── */
+/* ── Header ──────────────────────────────────────────────────────── */
 header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
-  border-bottom: 3px solid var(--clr-primary) !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,.35) !important;
+  background: linear-gradient(135deg, var(--clr-header-bg) 0%, var(--clr-nav-bg) 100%) !important;
+  border-bottom: 3px solid var(--clr-accent) !important;
+  box-shadow: 0 2px 12px rgba(0,29,85,.35) !important;
 }
 
-/* ── Tab Nav override ────────────────────────────────────────────── */
+/* ── Tab Nav ─────────────────────────────────────────────────────── */
 #tabNav {
   background-color: var(--clr-nav-bg) !important;
-  border-right: 2px solid rgba(37,99,235,.3) !important;
+  border-right: 2px solid rgba(2,72,115,.3) !important;
 }
 
 .navToggle {
@@ -752,11 +799,11 @@ header {
   color: #cbd5e1 !important;
   border-radius: var(--radius-sm) !important;
   border-right: none !important;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   letter-spacing: .4px;
 }
 .tab.active {
-  background-color: var(--clr-primary) !important;
+  background-color: var(--clr-accent) !important;
   color: #ffffff !important;
   box-shadow: var(--shadow-sm) !important;
 }
@@ -765,20 +812,135 @@ header {
   color: #ffffff !important;
 }
 
-/* ── Buttons – global override ───────────────────────────────────── */
-button:not(#docButton):not(.close-btn):not(.btn):not(.navToggle) {
-  background-color: var(--clr-primary) !important;
-  border-radius: var(--radius-sm) !important;
-  transition: filter .15s ease, background-color .15s ease !important;
+/* ── Button Component System ─────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  line-height: 1.25;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              box-shadow var(--transition-fast);
+  white-space: nowrap;
+  text-decoration: none;
 }
-/* docButton color is managed by JS (blue = has doc, gray = no doc) */
-#docButton { background-color: var(--clr-primary); border-radius: var(--radius-sm); }
-button:hover:not(#docButton) { filter: brightness(.92) !important; }
-button:disabled { opacity: .5 !important; cursor: not-allowed !important; }
+.btn:focus-visible {
+  outline: 2px solid var(--clr-accent);
+  outline-offset: 2px;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
-.btn-accent {
-  background-color: var(--clr-primary) !important;
-  border-radius: var(--radius-sm) !important;
+/* Primary — deep teal, white text */
+.btn-primary {
+  background-color: var(--clr-primary);
+  color: #ffffff;
+  border-color: var(--clr-primary);
+}
+.btn-primary:hover { background-color: var(--clr-primary-hover); }
+.btn-primary:active { background-color: var(--clr-primary-active); }
+
+/* Secondary — outlined medium teal */
+.btn-secondary {
+  background-color: transparent;
+  color: var(--clr-secondary);
+  border-color: var(--clr-secondary);
+}
+.btn-secondary:hover {
+  background-color: var(--clr-accent-light);
+  border-color: var(--clr-secondary-hover);
+}
+
+/* Danger — red fill */
+.btn-danger {
+  background-color: var(--clr-danger);
+  color: #ffffff;
+  border-color: var(--clr-danger);
+}
+.btn-danger:hover { background-color: #b91c1c; }
+
+/* Ghost — transparent, subtle hover */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--clr-text-secondary);
+  border-color: transparent;
+}
+.btn-ghost:hover {
+  background-color: var(--clr-surface);
+  color: var(--clr-text);
+}
+
+/* docButton color managed by JS (teal = has doc, gray = no doc) */
+#docButton { background-color: var(--clr-primary); border-radius: var(--radius-sm); }
+
+/* ── Form Controls ──────────────────────────────────────────────── */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  color: var(--clr-text);
+  background-color: var(--clr-surface-raised);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  transition: border-color var(--transition-fast),
+              box-shadow var(--transition-fast);
+  box-sizing: border-box;
+}
+.form-control:focus {
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 0 3px rgba(33, 191, 175, 0.20);
+  outline: none;
+}
+.form-control:disabled {
+  background-color: var(--clr-surface);
+  color: var(--clr-muted);
+  cursor: not-allowed;
+}
+
+/* ── Data Table Component ───────────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+.data-table thead tr {
+  background: var(--clr-primary);
+}
+.data-table thead th {
+  color: #ffffff;
+  font-weight: var(--fw-semibold);
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+.data-table tbody tr {
+  border-bottom: 1px solid var(--clr-border-light);
+  transition: background-color var(--transition-fast);
+}
+.data-table tbody tr:hover {
+  background-color: var(--clr-primary-lighter);
+}
+.data-table tbody tr:nth-child(even) {
+  background-color: var(--clr-surface);
+}
+.data-table td {
+  padding: var(--sp-2) var(--sp-3);
 }
 
 /* ── Toggle buttons in tree ──────────────────────────────────────── */
@@ -790,7 +952,7 @@ button:disabled { opacity: .5 !important; cursor: not-allowed !important; }
 /* ── Tree selected state ─────────────────────────────────────────── */
 .tree-item.selected {
   background-color: var(--clr-primary-light) !important;
-  outline: 2px solid var(--clr-primary) !important;
+  outline: 2px solid var(--clr-accent) !important;
   border-radius: var(--radius-sm) !important;
 }
 
@@ -806,28 +968,28 @@ button:disabled { opacity: .5 !important; cursor: not-allowed !important; }
 
 /* ── Fullscreen button ───────────────────────────────────────────── */
 #fullscreenBtn {
-  background: rgba(15,23,42,.85) !important;
+  background: rgba(0,29,85,.85) !important;
   border-radius: var(--radius) !important;
 }
-#fullscreenBtn:hover { background: rgba(15,23,42,.95) !important; filter: none !important; }
+#fullscreenBtn:hover { background: rgba(0,29,85,.95) !important; filter: none !important; }
 
 /* ── Import bar ──────────────────────────────────────────────────── */
 .tab-import-bar {
   border: 1px solid var(--clr-border) !important;
   border-radius: var(--radius) !important;
-  background: #fff !important;
+  background: var(--clr-surface-raised) !important;
 }
-.tab-import-title { color: var(--clr-primary) !important; font-weight: 700 !important; }
+.tab-import-title { color: var(--clr-primary) !important; font-weight: var(--fw-bold) !important; }
 
 /* ── Language toggle button ──────────────────────────────────────── */
 #langToggleBtn {
-  background: rgba(37,99,235,.15) !important;
-  border: 1px solid rgba(37,99,235,.4) !important;
-  color: #93c5fd !important;
+  background: rgba(33,191,175,.15) !important;
+  border: 1px solid rgba(33,191,175,.4) !important;
+  color: var(--clr-accent) !important;
   border-radius: var(--radius-sm) !important;
   padding: 5px 12px !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
+  font-size: var(--fs-sm) !important;
+  font-weight: var(--fw-bold) !important;
   letter-spacing: .5px !important;
   cursor: pointer !important;
   position: absolute !important;
@@ -836,7 +998,7 @@ button:disabled { opacity: .5 !important; cursor: not-allowed !important; }
   transform: translateY(-50%) !important;
 }
 #langToggleBtn:hover {
-  background: rgba(37,99,235,.28) !important;
+  background: rgba(33,191,175,.28) !important;
   filter: none !important;
 }
 
@@ -851,11 +1013,8 @@ button:disabled { opacity: .5 !important; cursor: not-allowed !important; }
   font-style: italic;
 }
 
-/* ── Result table improvements ───────────────────────────────────── */
-#resultTable thead tr { background: var(--clr-primary) !important; }
-#resultTable thead th { color: #fff !important; font-weight: 600 !important; padding: 10px 8px !important; position: sticky; top: 0; z-index: 2; }
-#resultTable tbody tr:hover { background-color: var(--clr-primary-lighter) !important; }
-#resultTable { border-radius: var(--radius) !important; }
+/* ── Result table overrides (now uses .data-table base) ──────────── */
+#resultTable { border-radius: var(--radius); }
 
 /* ── Material search table container — scroll within viewport ───── */
 #pesquisaMaterial { display: none; flex-direction: column; overflow: hidden; }
@@ -876,19 +1035,18 @@ button:disabled { opacity: .5 !important; cursor: not-allowed !important; }
 .doc-btn-active { background-color: var(--clr-primary) !important; }
 .doc-btn-inactive { background-color: #9ca3af !important; }
 
-/* ── Red edit-mode buttons keep their color ──────────────────────── */
-button[style*="#cc0000"] { background-color: #dc2626 !important; }
+/* ── Red edit-mode buttons (now use .btn-danger class) ──────────── */
 
 /* ── Toast notifications ─────────────────────────────────────────── */
 .ebom-toast {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 99999;
-  padding: 12px 20px;
+  z-index: var(--z-toast);
+  padding: var(--sp-3) var(--sp-5);
   border-radius: var(--radius);
   color: #fff;
-  font-size: 14px;
+  font-size: var(--fs-base);
   font-family: var(--font);
   max-width: 340px;
   box-shadow: var(--shadow-lg);
@@ -937,18 +1095,10 @@ button[style*="#cc0000"] { background-color: #dc2626 !important; }
 .tool-card-cols strong { color: #075985; display: block; margin-bottom: 2px; }
 .tool-card-upload { display: flex; flex-direction: column; gap: 8px; }
 .tool-convert-btn {
-  background: var(--clr-primary) !important;
-  color: #fff !important;
-  border: none !important;
-  padding: 10px 16px !important;
-  border-radius: var(--radius-sm) !important;
-  cursor: pointer !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-  width: 100% !important;
+  width: 100%;
   letter-spacing: .2px;
 }
-.tool-convert-btn:hover { background: var(--clr-primary-hover) !important; filter: none !important; }
+.tool-convert-btn:hover { background-color: var(--clr-primary-hover); }
 .tool-status { font-size: 13px; min-height: 18px; color: var(--clr-muted); }
 .tool-status.ok  { color: var(--clr-success); font-weight: 600; }
 .tool-status.err { color: var(--clr-danger); font-weight: 600; }
@@ -965,13 +1115,6 @@ button[style*="#cc0000"] { background-color: #dc2626 !important; }
 
 /* ── Save status bar ─────────────────────────────────────────────── */
 #saveStatusBar { background-color: var(--clr-primary) !important; }
-
-/* ── Export button ───────────────────────────────────────────────── */
-#exportButton, #exportSearchButton {
-  background-color: var(--clr-primary) !important;
-  border-radius: var(--radius-sm) !important;
-  padding: 6px 14px !important;
-}
 
 
 /* ═══ Extracted from <style> (body outside template) ═══ */
@@ -1052,8 +1195,8 @@ button[style*="#cc0000"] { background-color: #dc2626 !important; }
   inset:0 !important;
   width:100vw !important;
   height:100vh !important;
-  z-index:99999 !important;
-  background:#0b1220 !important;
+  z-index: var(--z-fullscreen) !important;
+  background: var(--clr-header-bg) !important;
 }
 
 .viewer-fullscreen #componentImage,

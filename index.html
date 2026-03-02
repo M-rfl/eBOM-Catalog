@@ -36,7 +36,7 @@
     <span id="appTitle" style="font-size:1em; letter-spacing:.5px;">eBOM Catalog</span>
     <span style="font-size:.65em; color:#64748b; font-weight:400; letter-spacing:.2px;">v2.0</span>
   </div>
-  <button id="langToggleBtn" onclick="toggleLanguage()" title="Switch language / Trocar idioma">PT</button>
+  <button id="langToggleBtn" class="btn btn-ghost" onclick="toggleLanguage()" title="Switch language / Trocar idioma">PT</button>
 </header>
 <!-- Tab Navigation -->
 <div id="tabNav">
@@ -55,7 +55,7 @@
 <div class="tab-import-row">
     <div class="tab-import-title">Load JSON - BOM</div>
     <input accept=".json" id="fileInput" type="file" />
-    <button class="btn-accent" type="button" onclick="loadSistemaEquipamentoJSON()">Import</button>
+    <button class="btn btn-primary" type="button" onclick="loadSistemaEquipamentoJSON()">Import</button>
   </div>
 </div>
 <div id="mainContainer">
@@ -68,19 +68,19 @@
   Salvando arquivo JSON...
 </div>
 <div id="editButtonContainer" style="position: absolute; bottom: 10px; left: 12px; z-index: 10;">
-<button id="editModeBtn" onclick="toggleEditMode()" style="margin-right: 5px;">
+<button id="editModeBtn" class="btn btn-primary" onclick="toggleEditMode()" style="margin-right: 5px;">
        Modo Edição
       </button>
-<button id="textEditBtn" onclick="toggleTextEdit()" style="display: none; margin-right: 5px; background-color: #cc0000">
+<button id="textEditBtn" class="btn btn-danger" onclick="toggleTextEdit()" style="display: none; margin-right: 5px;">
        Texto
       </button>
-<button id="saveJsonBtn" onclick="saveEditedJson()" style="display: none; background-color: #cc0000">
+<button id="saveJsonBtn" class="btn btn-danger" onclick="saveEditedJson()" style="display: none;">
        Salvar
       </button>
-<button id="addNodeBtn" onclick="addTreeNode()" style="margin-left: 5px; display: none; background-color: #cc0000">
+<button id="addNodeBtn" class="btn btn-danger" onclick="addTreeNode()" style="margin-left: 5px; display: none;">
        + Adicionar
       </button>
-<button id="removeNodeBtn" onclick="removeSelectedTreeNode()" style="margin-left: 5px; display: none; background-color: #cc0000">
+<button id="removeNodeBtn" class="btn btn-danger" onclick="removeSelectedTreeNode()" style="margin-left: 5px; display: none;">
        − Remover
       </button>
 </div>
@@ -88,28 +88,28 @@
 <!-- Image Container -->
 <div id="imageContainer">
 
-<button id="fullscreenBtn" type="button" title="Tela cheia">⛶</button>
+<button id="fullscreenBtn" class="btn btn-ghost" type="button" title="Tela cheia">⛶</button>
 
 <!-- DOC Button -->
-<button id="editDocButton" onclick="handleEditDocClick()" style="display: none; position: absolute; top: 5px; right: 100px; z-index: 10; background-color: #cc0000; color: white; font-weight: bold; border: none; padding: 5px 10px; cursor: pointer;">
+<button id="editDocButton" class="btn btn-danger" onclick="handleEditDocClick()" style="display: none; position: absolute; top: 5px; right: 100px; z-index: 10;">
     ✎ Documentação
 </button>
-<button id="docButton" onclick="handleDocButtonClick()" style="position: absolute; top: 5px; right: 5px; z-index: 10; color: white; font-weight: bold; border: none; padding: 5px 10px; cursor: pointer;">
+<button id="docButton" class="btn btn-primary" onclick="handleDocButtonClick()" style="position: absolute; top: 5px; right: 5px; z-index: 10;">
         📓 Doc
     </button>
 <!-- Edit Button for Images -->
-<button id="imageEditBtn" onclick="triggerImageUpload()" style="display: none; position: absolute; top: 5px; left: 5px; z-index: 10; background-color: #cc0000; color: white; font-weight: bold;">
+<button id="imageEditBtn" class="btn btn-danger" onclick="triggerImageUpload()" style="display: none; position: absolute; top: 5px; left: 5px; z-index: 10;">
         Imagem
     </button>
 <div id="imageInfo">0 / 0</div>
-<button id="prevImage" onclick="navigateImage(-1)" style="position: absolute; left: 1px; top: 50%; transform: translateY(-50%); display: inline-block;">❮</button>
+<button id="prevImage" class="btn btn-ghost" onclick="navigateImage(-1)" style="position: absolute; left: 1px; top: 50%; transform: translateY(-50%); display: inline-block;">❮</button>
 <img alt="Component Image" id="componentImage" style="display: none;"/>
 <model-viewer id="componentModel" src="" alt="3D model" camera-controls touch-action="pan-y" environment-image="neutral" exposure="1.0" shadow-intensity="0.6" loading="eager" reveal="auto"></model-viewer>
-<button id="nextImage" onclick="navigateImage(1)" style="position: absolute; right: 1px; top: 50%; transform: translateY(-50%); display: inline-block;">❯</button>
+<button id="nextImage" class="btn btn-ghost" onclick="navigateImage(1)" style="position: absolute; right: 1px; top: 50%; transform: translateY(-50%); display: inline-block;">❯</button>
 <div id="zoomControls">
-<button onclick="zoomImage(1.1)">+</button>
-<button onclick="zoomImage(0.9)">-</button>
-<button onclick="resetZoom()">Reset</button>
+<button class="btn btn-ghost" onclick="zoomImage(1.1)">+</button>
+<button class="btn btn-ghost" onclick="zoomImage(0.9)">-</button>
+<button class="btn btn-ghost" onclick="resetZoom()">Reset</button>
 </div>
 </div>
 <!-- Bottom Section -->
@@ -119,7 +119,7 @@
 <h3>
         Details
        </h3>
-<button id="exportButton" onclick="exportToExcel()" style="margin-left: 10px; background-color: #FF7C3C; color: white; border: none; padding: 5px 10px; cursor: pointer;">
+<button id="exportButton" class="btn btn-primary" onclick="exportToExcel()" style="margin-left: 10px;">
         Export excel
        </button>
 </div>
@@ -136,7 +136,7 @@
 <div class="tab-import-row">
     <div class="tab-import-title">Importar JSON - Material search</div>
     <input accept=".json" id="fileInputCadastro" type="file" />
-    <button class="btn-accent" type="button" onclick="loadBaseCadastroJSON()">Import</button>
+    <button class="btn btn-primary" type="button" onclick="loadBaseCadastroJSON()">Import</button>
   </div>
 </div>
 <!-- Fields Container -->
@@ -146,8 +146,8 @@
 <label for="searchInput">
       Pesquisa:
      </label>
-<input disabled="" id="searchInput" placeholder="Palavras-chave..." type="text"/>
-<select disabled="" id="searchCondition">
+<input class="form-control" disabled="" id="searchInput" placeholder="Palavras-chave..." type="text"/>
+<select class="form-control" disabled="" id="searchCondition">
 <option value="E">
        E
       </option>
@@ -161,7 +161,7 @@
 <label for="depositoFilter">
       Estoque:
      </label>
-<select disabled="" id="depositoFilter">
+<select class="form-control" disabled="" id="depositoFilter">
 <option value="">
        Filter by Depósito
       </option>
@@ -176,10 +176,10 @@
 </div>
 <!-- Filter Button -->
 <div class="field input-container">
-<button id="filterButton" onclick="filterData()" style="margin: 10px 0; font-weight: bold;">
+<button id="filterButton" class="btn btn-primary" onclick="filterData()" style="margin: 10px 0;">
       Filtrar
      </button>
-<button id="exportSearchButton" onclick="exportSearchResultsToExcel()" style="margin: 10px 0; font-weight: bold;">
+<button id="exportSearchButton" class="btn btn-primary" onclick="exportSearchResultsToExcel()" style="margin: 10px 0;">
       Exportar Excel
      </button>
 </div>
@@ -187,7 +187,7 @@
 </div>
 </div>
 <div class="table-container">
-<table id="resultTable">
+<table id="resultTable" class="data-table">
 <thead>
 <tr>
 <th>
@@ -229,7 +229,7 @@
     <div class="tab-import-row">
       <div class="tab-import-title">Checklist Digital</div>
       <input type="file" id="checklistJsonInput" accept="application/json,.json" />
-      <button class="btn" id="checklistLoadBtn" type="button">Carregar JSON</button>
+      <button class="btn btn-primary" id="checklistLoadBtn" type="button">Carregar JSON</button>
       <span class="muted" id="checklistLoadStatus" style="font-size:12px;"></span>
     </div>
   </div>
@@ -1824,7 +1824,7 @@ function initChecklistDigitalTab(){
       </div>
       <div class="tool-card-upload">
         <input type="file" id="hierarchyExcelInput" accept=".xlsx,.xls" />
-        <button class="tool-convert-btn" onclick="runHierarchyConverter()" id="btn-convert-hierarchy">
+        <button class="btn btn-primary tool-convert-btn" onclick="runHierarchyConverter()" id="btn-convert-hierarchy">
           ⬇ Convert &amp; Download JSON
         </button>
       </div>
@@ -1844,7 +1844,7 @@ function initChecklistDigitalTab(){
       </div>
       <div class="tool-card-upload">
         <input type="file" id="materialExcelInput" accept=".xlsx,.xls" />
-        <button class="tool-convert-btn" onclick="runMaterialConverter()" id="btn-convert-material">
+        <button class="btn btn-primary tool-convert-btn" onclick="runMaterialConverter()" id="btn-convert-material">
           ⬇ Convert &amp; Download JSON
         </button>
       </div>
@@ -1865,7 +1865,7 @@ function initChecklistDigitalTab(){
       </div>
       <div class="tool-card-upload">
         <input type="file" id="checklistExcelInput" accept=".xlsx,.xls" />
-        <button class="tool-convert-btn" onclick="runChecklistConverter()" id="btn-convert-checklist">
+        <button class="btn btn-primary tool-convert-btn" onclick="runChecklistConverter()" id="btn-convert-checklist">
           ⬇ Convert &amp; Download JSON
         </button>
       </div>
@@ -1907,20 +1907,20 @@ function initChecklistDigitalTab(){
 <h3>Gerenciar Documentação</h3>
 <div>
 <label>Link 1:
-        <input id="docLink1" style="width:100%" type="text"/>
+        <input id="docLink1" class="form-control" style="width:100%" type="text"/>
 </label>
 <br/><br/>
 <label>Link 2:
-        <input id="docLink2" style="width:100%" type="text"/>
+        <input id="docLink2" class="form-control" style="width:100%" type="text"/>
 </label>
 <br/><br/>
 <label>Link 3:
-        <input id="docLink3" style="width:100%" type="text"/>
+        <input id="docLink3" class="form-control" style="width:100%" type="text"/>
 </label>
 </div>
 <div style="text-align:right; margin-top:10px;">
-<button onclick="closeDocManagerModal()">Cancelar</button>
-<button onclick="saveDocLinks()">Salvar</button>
+<button class="btn btn-ghost" onclick="closeDocManagerModal()">Cancelar</button>
+<button class="btn btn-primary" onclick="saveDocLinks()">Salvar</button>
 </div>
 </div>
 </div>
@@ -1970,10 +1970,10 @@ function initChecklistDigitalTab(){
 <div id="editModeModalOverlay">
   <div id="editModeModal">
     <h3>Digite a senha para Modo Edição</h3>
-    <input type="password" id="editPasswordInput" placeholder="Senha"/>
+    <input type="password" id="editPasswordInput" class="form-control" placeholder="Senha"/>
     <br/>
-    <button onclick="confirmEditPassword()">Confirmar</button>
-    <button onclick="closeEditPasswordModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="confirmEditPassword()">Confirmar</button>
+    <button class="btn btn-ghost" onclick="closeEditPasswordModal()">Cancelar</button>
   </div>
 </div>
 
